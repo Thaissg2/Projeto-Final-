@@ -2,6 +2,7 @@
 # ----- Importa e inicia pacotes
 import pygame
 import random
+from os import path
 
 pygame.init()
  
@@ -27,7 +28,13 @@ plataforma_img = pygame.transform.scale(plataforma_img, (PLATAFORMA_LARGURA, PLA
 peach_img = pygame.image.load('assets/peach.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
 
- 
+# Define a aceleração da gravidade
+gravidade = 5
+# Define a velocidade inicial no pulo
+JUMP_SIZE = ESPINHO_ALTURA + 5
+# Define a velocidade em x
+VELOCIDADE_X = 5
+
 # ----- Inicia estruturas de dados
 # Definindo os novos tipos
 class Peach(pygame.sprite.Sprite):
@@ -85,17 +92,19 @@ game = True
 clock = pygame.time.Clock()
 FPS = 30
 
-# Criando os espinhos
+todos_sprites = pygame.sprite.Group()
 todos_espinhos = pygame.sprite.Group()
+# Criando o jogador
+jogador = Peach(peach_img)
+todos_sprites.add(jogador)
+
+# Criando os espinhos
 for i in range(6):
     espinho = Espinho(espinho_img)
+    todos_sprites.add(espinho)
     todos_espinhos.add(espinho)
 
 plataforma = Plataforma(plataforma_img)
-
-#Criando o jogador
-jogador = Peach(peach_img)
-todos_espinhos.add(jogador)
 
 
 # ===== Loop principal =====
@@ -120,16 +129,22 @@ while game:
                 jogador.velocidadex += 8
             if event.key == pygame.K_RIGHT:
                 jogador.velocidadex -= 8
+
     # ----- Atualiza estado do jogo
     # Atualizando a posição dos espinhos
-    todos_espinhos.update()
-    # ----- Gera saídas
+    todos_sprites.update()
 
+    #---- Verifica se houve dano entre Peach e Espinho
+    dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True)
+    if len(dano) > 0:
+        game = False
+
+    # ----- Gera saídas
     window.fill((0, 0, 0))  # Preenche com a cor branca
     window.blit(fundo, (0, 0))
 
     # Desenhando espinhos
-    todos_espinhos.draw(window)
+    todos_sprites.draw(window)
     window.blit(plataforma.image, plataforma.rect)
     #window.blit(peach.image, peach.rect)
     pygame.display.update()
