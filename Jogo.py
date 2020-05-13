@@ -23,7 +23,8 @@ PEACH_LARGURA = 75
 PEACH_ALTURA = 125
 BLOCO_TAMANHO = 40
 font = pygame.font.SysFont(None, 48)
-fundo = pygame.image.load('assets/fundo2.png').convert()
+fundo = pygame.image.load('assets/fundo2.jpg').convert_alpha()
+fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
 espinho_img = pygame.image.load('assets/espinho.png').convert_alpha()
 espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
 plataforma_img = pygame.image.load('assets/plataforma.png').convert_alpha()
@@ -43,6 +44,9 @@ VELOCIDADE_X = 9
 # Definindo tipos de blocos
 BLOCO = 0
 VAZIO = -1 
+
+# Definindo velocidade do fundo
+VELOCIDADE_FUNDO = -2
 
 # Criando o mapa
 MAPA = [
@@ -195,6 +199,10 @@ def game_screen(window):
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
+
+    #Carregando fundo do jogo
+    fundo_rect = fundo.get_rect()
+
     # Criando o jogador
     jogador = Peach(peach_img, 14, 0, blocos)
     # Cria blocos de acordo com o mapa
@@ -216,8 +224,16 @@ def game_screen(window):
 
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
-    game = True
+
+    #carrega fundo do jogo
+
+
+  #  fundo_rects = []
+  #   for fundo in fundos:
+  #        fundo_rects.append(background.get_rect())
+
     # ===== Loop principal =====
+    game = True
     while game:
         clock.tick(FPS)
         # ----- Trata eventos
@@ -246,6 +262,13 @@ def game_screen(window):
         # Atualizando a posição dos espinhos
         todos_sprites.update()
 
+        #Atualiza posicao da imagem de fundo
+        fundo_rect.y -= VELOCIDADE_FUNDO
+
+        #Verifica se o fundo saiu para baixo
+        if fundo_rect.top < 0:
+            fundo_rect.y -= fundo_rect.height
+
         #---- Verifica se houve dano entre Peach e Espinho
         dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True)
         if len(dano) > 0:
@@ -253,7 +276,16 @@ def game_screen(window):
 
         # ----- Gera saídas
         window.fill((0, 0, 0))  # Preenche com a cor branca
-        window.blit(fundo, (0, 0))
+
+        #Alem disso, deve ser cíclica, ou seja, a parte de cima deve ser continuacao da parte de baixo
+        window.blit(fundo, fundo_rect)
+
+        #Desenha o fundo com cópia pra cima
+        fundo_rect2 = fundo_rect.copy()
+        if fundo_rect.top > 0:
+            fundo_rect2.y -= fundo_rect2.height
+        window.blit(fundo, fundo_rect2)
+       
 
         # Desenhando espinhos
         todos_sprites.draw(window)
