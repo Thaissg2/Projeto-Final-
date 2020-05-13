@@ -266,7 +266,7 @@ def game_screen(window):
         fundo_rect.y -= VELOCIDADE_FUNDO
 
         #Verifica se o fundo saiu para baixo
-        if fundo_rect.top < 0:
+        if fundo_rect.top > ALTURA:
             fundo_rect.y -= fundo_rect.height
 
         #---- Verifica se houve dano entre Peach e Espinho
