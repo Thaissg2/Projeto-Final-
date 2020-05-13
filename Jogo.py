@@ -3,8 +3,10 @@
 import pygame
 import random
 from os import path
+import time
 
 pygame.init()
+pygame.mixer.init()
  
 # ----- Gera tela principal
 LARGURA = 880
@@ -33,6 +35,12 @@ peach_img = pygame.image.load('assets/peach.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
 bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
+
+# Carrega os sons do jogo
+pygame.mixer.music.load('assets/trilha_sonora.wav')
+pygame.mixer.music.set_volume(0.8)
+
+som_morte = pygame.mixer.Sound('assets/morte.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -234,6 +242,9 @@ def game_screen(window):
 
     # ===== Loop principal =====
     game = True
+
+    pygame.mixer.music.play(loops = -1)
+
     while game:
         clock.tick(FPS)
         # ----- Trata eventos
@@ -272,7 +283,11 @@ def game_screen(window):
         #---- Verifica se houve dano entre Peach e Espinho
         dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True)
         if len(dano) > 0:
+            som_morte.play()
+            #Tempo antes de fechar o jogo
+            time.sleep(1)
             game = False
+
 
         # ----- Gera saídas
         window.fill((0, 0, 0))  # Preenche com a cor branca
