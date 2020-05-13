@@ -16,7 +16,7 @@ FPS = 30
 
 # ----- Inicia assets
 ESPINHO_LARGURA = 50
-ESPINHO_ALTURA = 38
+ESPINHO_ALTURA = 50
 PLATAFORMA_LARGURA = LARGURA
 PLATAFORMA_ALTURA = 40
 PEACH_LARGURA = 75
@@ -36,9 +36,9 @@ bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 # Define a aceleração da gravidade
 GRAVIDADE = 5
 # Define a velocidade inicial no pulo
-PULO = ESPINHO_ALTURA + 10
+PULO = 45
 # Define a velocidade em x
-VELOCIDADE_X = 5
+VELOCIDADE_X = 9
 
 # Definindo tipos de blocos
 BLOCO = 0
@@ -142,7 +142,7 @@ class Peach(pygame.sprite.Sprite):
             if self.velocidadex > 0:
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
-                self.rect.lef = colisão.rect.right
+                self.rect.left = colisão.rect.right
     
     #Método que faz o personagem pular
     def jump (self):
@@ -152,15 +152,16 @@ class Peach(pygame.sprite.Sprite):
     
 
 class Espinho(pygame.sprite.Sprite):
-    def __init__(self, img):
+    def __init__(self, espinho_img, blocos):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
-        self.image = img
+        self.image = espinho_img
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
-        self.velocidadex = random.randint(-3, 3)
-        self.velocidadey = random.randint(2, 9)
+        self.velocidadex = random.choice([-5,-4,-3,3,4,5])
+        self.velocidadey = 6
+        self.blocks = blocos
 
     def update(self):
         # Atualizando a posição do espinho
@@ -171,8 +172,14 @@ class Espinho(pygame.sprite.Sprite):
         if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
             self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
             self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
-            self.velocidadex = random.randint(-3, 3)
-            self.velocidadey = random.randint(2, 9)
+            self.velocidadex = random.choice([-5,-4,-3,3,4,5])
+            self.velocidadey = 8
+        #Se colidiu com algum bloco, volta para o ponto anterior
+        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        #Corrige a posição do espinho antes da colisão
+        for colisão in colisões:
+            self.velocidadey = 0
+            #self.velocidadex = random.choice([-5,-4,-3,3,4,5])
 
 
 class Plataforma(pygame.sprite.Sprite):
@@ -181,7 +188,7 @@ class Plataforma(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = img
         self.rect = self.image.get_rect()
-        self.rect.bottom = ALTURA - 10
+        self.rect.bottom = ALTURA
 
 def game_screen(window):
     clock = pygame.time.Clock()
@@ -203,12 +210,12 @@ def game_screen(window):
     
     # Criando os espinhos
     for i in range(6):
-        espinho= Espinho(espinho_img)
+        espinho= Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
 
     plataforma = Plataforma(plataforma_img)
-
+    blocos.add(plataforma)
     game = True
     # ===== Loop principal =====
     while game:
