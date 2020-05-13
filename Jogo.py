@@ -38,7 +38,7 @@ bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 
 # Carrega os sons do jogo
 pygame.mixer.music.load('assets/trilha_sonora.wav')
-pygame.mixer.music.set_volume(0.8)
+pygame.mixer.music.set_volume(1)
 
 som_morte = pygame.mixer.Sound('assets/morte.wav')
 
