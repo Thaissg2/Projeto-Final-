@@ -27,11 +27,11 @@ BLOCO_TAMANHO = 40
 font = pygame.font.SysFont(None, 48)
 fundo = pygame.image.load('assets/fundo2.jpg').convert_alpha()
 fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
-espinho_img = pygame.image.load('assets/espinho.png').convert_alpha()
+espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
 espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
 plataforma_img = pygame.image.load('assets/plataforma.png').convert_alpha()
 plataforma_img = pygame.transform.scale(plataforma_img, (PLATAFORMA_LARGURA, PLATAFORMA_ALTURA))
-peach_img = pygame.image.load('assets/peach.png').convert_alpha()
+peach_img = pygame.image.load('assets/Peach2.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
 bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
@@ -40,7 +40,7 @@ bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 pygame.mixer.music.load('assets/trilha_sonora.wav')
 pygame.mixer.music.set_volume(1)
 
-som_morte = pygame.mixer.Sound('assets/morte.wav')
+#som_morte = pygame.mixer.Sound('assets/morte.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -191,8 +191,6 @@ class Espinho(pygame.sprite.Sprite):
         #Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0
-            #self.velocidadex = random.choice([-5,-4,-3,3,4,5])
-
 
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, img):
@@ -207,6 +205,7 @@ def game_screen(window):
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
+    vidas = 3
 
     #Carregando fundo do jogo
     fundo_rect = fundo.get_rect()
@@ -225,20 +224,13 @@ def game_screen(window):
     todos_sprites.add(jogador)
     
     # Criando os espinhos
-    for i in range(6):
+    for i in range(3):
         espinho= Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
 
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
-
-    #carrega fundo do jogo
-
-
-  #  fundo_rects = []
-  #   for fundo in fundos:
-  #        fundo_rects.append(background.get_rect())
 
     # ===== Loop principal =====
     game = True
@@ -285,7 +277,9 @@ def game_screen(window):
         if len(dano) > 0:
             som_morte.play()
             #Tempo antes de fechar o jogo
-            time.sleep(1)
+            time.sleep(0.5)
+            jogador.kill()
+            vidas -= 1
             game = False
 
 
