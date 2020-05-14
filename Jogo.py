@@ -37,10 +37,10 @@ bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 
 # Carrega os sons do jogo
-pygame.mixer.music.load('assets/trilha_sonora.wav')
-pygame.mixer.music.set_volume(1)
+trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora.wav')
+#trilha_sonora = pygame.mixer.music.set_volume(1)
 
-#som_morte = pygame.mixer.Sound('assets/morte.wav')
+som_morte = pygame.mixer.Sound('assets/morte.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -105,6 +105,7 @@ class Peach(pygame.sprite.Sprite):
         self.state = PARADO
         # Define a imagem do Sprite
         self.image = peach_img
+        self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
         # Guarda o grupo de blocos
@@ -168,12 +169,14 @@ class Espinho(pygame.sprite.Sprite):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
         self.image = espinho_img
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
         self.blocks = blocos
+
 
     def update(self):
         # Atualizando a posição do espinho
@@ -182,10 +185,17 @@ class Espinho(pygame.sprite.Sprite):
         # Se o espinho passar do final da tela, volta para cima e sorteia
         # novas posições e velocidades
         if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
+            #ESPINHO_ALTURA = random.randint(50,130)
+            #ESPINHO_LARGURA = ESPINHO_ALTURA
+            #espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
+            #espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
+            self.image = espinho_img
+            self.rect = self.image.get_rect()
             self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
             self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+
         #Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         #Corrige a posição do espinho antes da colisão
@@ -205,7 +215,6 @@ def game_screen(window):
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
-    vidas = 3
 
     #Carregando fundo do jogo
     fundo_rect = fundo.get_rect()
@@ -224,7 +233,7 @@ def game_screen(window):
     todos_sprites.add(jogador)
     
     # Criando os espinhos
-    for i in range(3):
+    for i in range(1):
         espinho= Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
@@ -235,7 +244,7 @@ def game_screen(window):
     # ===== Loop principal =====
     game = True
 
-    pygame.mixer.music.play(loops = -1)
+    trilha_sonora.play()
 
     while game:
         clock.tick(FPS)
@@ -273,13 +282,12 @@ def game_screen(window):
             fundo_rect.y -= fundo_rect.height
 
         #---- Verifica se houve dano entre Peach e Espinho
-        dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True)
+        dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
         if len(dano) > 0:
+            trilha_sonora.stop()
             som_morte.play()
             #Tempo antes de fechar o jogo
-            time.sleep(0.5)
-            jogador.kill()
-            vidas -= 1
+            time.sleep(3)
             game = False
 
 
