@@ -185,14 +185,14 @@ class Espinho(pygame.sprite.Sprite):
         # Se o espinho passar do final da tela, volta para cima e sorteia
         # novas posições e velocidades
         if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
-            #ESPINHO_ALTURA = random.randint(50,130)
-            #ESPINHO_LARGURA = ESPINHO_ALTURA
-            #espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
-            #espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
+            ESPINHO_ALTURA = random.randint(50,130)
+            ESPINHO_LARGURA = ESPINHO_ALTURA
+            espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
+            espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
             self.image = espinho_img
             self.rect = self.image.get_rect()
             self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
-            self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
+            self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
 
@@ -233,7 +233,7 @@ def game_screen(window):
     todos_sprites.add(jogador)
     
     # Criando os espinhos
-    for i in range(1):
+    for i in range(4):
         espinho= Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
@@ -287,7 +287,7 @@ def game_screen(window):
             trilha_sonora.stop()
             som_morte.play()
             #Tempo antes de fechar o jogo
-            time.sleep(3)
+            time.sleep(2.3)
             game = False
 
 
