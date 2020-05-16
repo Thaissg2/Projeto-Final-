@@ -24,6 +24,8 @@ PLATAFORMA_ALTURA = 40
 PEACH_LARGURA = 75
 PEACH_ALTURA = 125
 BLOCO_TAMANHO = 40
+COGUMELO_ALTURA = 35
+COGUMELO_LARGURA = 35
 font = pygame.font.SysFont(None, 48)
 fundo = pygame.image.load('assets/fundo2.jpg').convert_alpha()
 fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
@@ -35,6 +37,16 @@ peach_img = pygame.image.load('assets/Peach2.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
 bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
+cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
+cogumelo_img= pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
+piscando_anim = []
+
+for i in range(0,8):
+    #Definindo animmacao do dano
+    arquivo_anim = 'assets/piscando{}.png'.format(i)
+    img = pygame.image.load(arquivo_anim).convert_alpha()
+    img = pygame.transform.scale(img, (75, 125))
+    piscando_anim.append(img)
 
 # Carrega os sons do jogo
 trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora.wav')
@@ -202,6 +214,56 @@ class Espinho(pygame.sprite.Sprite):
         for colisão in colisões:
             self.velocidadey = 0
 
+#Classe que representa contato da peach com espinho
+class Contato(pygame.sprite.Sprite):
+    # Construtor da classe.
+    def __init__(self, center, piscando_anim):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+ 
+        # Armazena a animação de explosão
+        self.piscando_anim = piscando_anim
+ 
+        # Inicia o processo de animação colocando a primeira imagem na tela.
+        self.frame = 0  # Armazena o índice atual na animação
+        self.image = self.piscando_anim[self.frame]  # Pega a primeira imagem
+        self.rect = self.image.get_rect()
+        self.rect.center = center  # Posiciona o centro da imagem
+ 
+        # Guarda o tick da primeira imagem, ou seja, o momento em que a imagem foi mostrada
+        self.last_update = pygame.time.get_ticks()
+ 
+        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
+        # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
+        # próxima imagem da animação será mostrada
+        self.frame_ticks = 50
+ 
+    def update(self):
+        # Verifica o tick atual.
+        atual = pygame.time.get_ticks()
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+        elapsed_ticks = atual - self.last_update
+ 
+        # Se já está na hora de mudar de imagem...
+        if elapsed_ticks > self.frame_ticks:
+            # Marca o tick da nova imagem.
+            self.last_update = atual
+ 
+            # Avança um quadro.
+            self.frame += 1
+ 
+            # Verifica se já chegou no final da animação.
+            if self.frame == len(self.piscando_anim):
+                # Se sim, tchau piscando!
+                self.kill()
+            else:
+                # Se ainda não chegou ao fim da piscada, troca de imagem.
+                center = self.rect.center
+                self.image = self.piscando_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+
+#Classe que representa a plataforma
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, img):
         # Construtor da classe mãe (Sprite).
@@ -240,35 +302,43 @@ def game_screen(window):
 
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
+    FINAL = 0
+    JOGANDO = 1
+    MORRENDO = 2
+    estado = JOGANDO
+
+
+    vidas = 3
 
     # ===== Loop principal =====
-    game = True
+
 
     trilha_sonora.play()
 
-    while game:
+    while estado != FINAL:
         clock.tick(FPS)
         # ----- Trata eventos
         for event in pygame.event.get():
             # ----- Verifica consequências
             if event.type == pygame.QUIT:
-                game = False
+                estado = FINAL
             # ---- Verifica se apertou alguma tecla.
-            if event.type == pygame.KEYDOWN:
-                # Dependendo da tecla, altera a velocidade.
-                if event.key == pygame.K_LEFT:
-                    jogador.velocidadex -= VELOCIDADE_X
-                if event.key == pygame.K_RIGHT:
-                    jogador.velocidadex += VELOCIDADE_X
-                if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
-                    jogador.jump()
-            # Verifica se soltou alguma tecla.
-            if event.type == pygame.KEYUP:
-                # Dependendo da tecla, altera o estado do jogador.
-                if event.key == pygame.K_LEFT:
-                    jogador.velocidadex += VELOCIDADE_X
-                if event.key == pygame.K_RIGHT:
-                    jogador.velocidadex -= VELOCIDADE_X
+            if estado == JOGANDO:
+                if event.type == pygame.KEYDOWN:
+                    # Dependendo da tecla, altera a velocidade.
+                    if event.key == pygame.K_LEFT:
+                        jogador.velocidadex -= VELOCIDADE_X
+                    if event.key == pygame.K_RIGHT:
+                        jogador.velocidadex += VELOCIDADE_X
+                    if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
+                        jogador.jump()
+                # Verifica se soltou alguma tecla.
+                if event.type == pygame.KEYUP:
+                    # Dependendo da tecla, altera o estado do jogador.
+                    if event.key == pygame.K_LEFT:
+                        jogador.velocidadex += VELOCIDADE_X
+                    if event.key == pygame.K_RIGHT:
+                        jogador.velocidadex -= VELOCIDADE_X
 
         # ----- Atualiza estado do jogo
         # Atualizando a posição dos espinhos
@@ -282,13 +352,29 @@ def game_screen(window):
             fundo_rect.y -= fundo_rect.height
 
         #---- Verifica se houve dano entre Peach e Espinho
-        dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
-        if len(dano) > 0:
-            trilha_sonora.stop()
-            som_morte.play()
-            #Tempo antes de fechar o jogo
-            time.sleep(2.3)
-            game = False
+        if estado == JOGANDO:
+            dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
+            if len(dano) > 0:
+                jogador.kill()
+                vidas -= 1
+                contato = Contato(jogador.rect.center, piscando_anim)
+                todos_sprites.add(contato)
+                estado = MORRENDO
+                piscando_tick = pygame.time.get_ticks()
+                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+
+        elif estado == MORRENDO:
+            atual = pygame.time.get_ticks()
+            if atual - piscando_tick > piscando_duracao:
+                if vidas == 0:
+                    trilha_sonora.stop()
+                    som_morte.play()
+                    time.sleep(2.3)
+                    estado = FINAL 
+                else:
+                    estado = JOGANDO
+                    jogador = Peach(peach_img, linha, coluna, blocos)
+                    todos_sprites.add(jogador)
 
 
         # ----- Gera saídas
