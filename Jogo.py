@@ -355,6 +355,7 @@ def game_screen(window):
 
 
     vidas = 3
+    keys_down = {}
 
     # ===== Loop principal =====
 
@@ -372,6 +373,7 @@ def game_screen(window):
             if estado == JOGANDO:
                 if event.type == pygame.KEYDOWN:
                     # Dependendo da tecla, altera a velocidade.
+                    keys_down[event.key] = True
                     if event.key == pygame.K_LEFT:
                         jogador.velocidadex -= VELOCIDADE_X
                     if event.key == pygame.K_RIGHT:
@@ -380,11 +382,12 @@ def game_screen(window):
                         jogador.jump()
                 # Verifica se soltou alguma tecla.
                 if event.type == pygame.KEYUP:
-                    # Dependendo da tecla, altera o estado do jogador.
-                    if event.key == pygame.K_LEFT:
-                        jogador.velocidadex += VELOCIDADE_X
-                    if event.key == pygame.K_RIGHT:
-                        jogador.velocidadex -= VELOCIDADE_X
+                    # Dependendo da tecla, altera a velocidade.
+                    if event.key in keys_down and keys_down[event.key]:
+                        if event.key == pygame.K_LEFT:
+                            jogador.velocidadex += VELOCIDADE_X
+                        if event.key == pygame.K_RIGHT:
+                            jogador.velocidadex -= VELOCIDADE_X
 
         # ----- Atualiza estado do jogo
         # Atualizando a posição dos espinhos
@@ -401,11 +404,11 @@ def game_screen(window):
         if estado == JOGANDO:
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
-            for esp in dano:
+            #for esp in dano:
             # O espinho é destruido e precisa ser recriado
-                e = Espinho(espinho_img)
-                todos_sprites.add(e)
-                todos_espinhos.add(e)
+                #e = Espinho(espinho_img)
+                #todos_sprites.add(e)
+                #todos_espinhos.add(e)
             
             #for cog in ganhando_vida:
             # O espinho é destruido e precisa ser recriado
@@ -419,6 +422,7 @@ def game_screen(window):
                 contato = Contato(jogador.rect.center, piscando_anim)
                 todos_sprites.add(contato)
                 estado = MORRENDO
+                keys_down = {}
                 piscando_tick = pygame.time.get_ticks()
                 piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
 
