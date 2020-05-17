@@ -125,7 +125,7 @@ class Peach(pygame.sprite.Sprite):
         self.blocks = blocos
         # Posiciona o personagem
         self.rect.x = coluna * BLOCO_TAMANHO
-        #self.rect.centerx = LARGURA/2
+        self.rect.centerx = LARGURA/2
         self.rect.bottom = linha * BLOCO_TAMANHO
         self.velocidadex = 0
         self.velocidadey = 0
@@ -264,6 +264,43 @@ class Contato(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
+#Classe cogumelo
+class Cogumelo(pygame.sprite.Sprite):
+    def __init__(self, cogumelo_img, blocos):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+        self.image = cogumelo_img
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0, LARGURA-COGUMELO_LARGURA)
+        self.rect.y = random.randint(-100, -COGUMELO_ALTURA)
+        self.velocidadex = 0
+        self.velocidadey = 6
+        self.blocks = blocos
+
+
+    def update(self):
+        # Atualizando a posição do cogumelo
+        self.rect.x += self.velocidadex
+        self.rect.y += self.velocidadey
+        # Se o cogumelo passar do final da tela, volta para cima e sorteia a nova posição
+        if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
+            self.image = espinho_img
+            self.rect = self.image.get_rect()
+            self.rect.x = random.randint(0, LARGURA-COGUMELO_LARGURA)
+            self.rect.y = random.randint(-200, -COGUMELO_ALTURA)
+            self.velocidadex = random.choice([-5,-4,-3,3,4,5])
+            self.velocidadey = 6
+
+        #Se colidiu com algum bloco, volta para o ponto anterior
+        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        #Corrige a posição do espinho antes da colisão
+        for colisão in colisões:
+            self.velocidadey = 0 
+            if self.velocidadex == 0:
+                self.velocidadex = random.choice([-5,-4, 4, 5])
+
+
 #Classe que representa a plataforma
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, img):
@@ -277,6 +314,7 @@ def game_screen(window):
     clock = pygame.time.Clock()
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
+    todos_cogumelos = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
 
     #Carregando fundo do jogo
@@ -301,8 +339,15 @@ def game_screen(window):
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
 
+    # Criando os cogumelos
+    for i in range(1):
+        cogumelo = Cogumelo(cogumelo_img, blocos)
+        todos_sprites.add(cogumelo)
+        todos_cogumelos.add(cogumelo)
+
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
+
     FINAL = 0
     JOGANDO = 1
     MORRENDO = 2
@@ -355,6 +400,19 @@ def game_screen(window):
         #---- Verifica se houve dano entre Peach e Espinho
         if estado == JOGANDO:
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
+            ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
+            for esp in dano:
+            # O espinho é destruido e precisa ser recriado
+                e = Espinho(espinho_img)
+                todos_sprites.add(e)
+                todos_espinhos.add(e)
+            
+            #for cog in ganhando_vida:
+            # O espinho é destruido e precisa ser recriado
+                #c = Cogumelo(cogumelo_img)
+                #todos_sprites.add(c)
+                #todos_cogumelos.add(c)            
+
             if len(dano) > 0:
                 jogador.kill()
                 vidas -= 1
@@ -363,6 +421,9 @@ def game_screen(window):
                 estado = MORRENDO
                 piscando_tick = pygame.time.get_ticks()
                 piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+
+            if len(ganhando_vida) > 0:
+                vidas += 1
 
         elif estado == MORRENDO:
             atual = pygame.time.get_ticks()
