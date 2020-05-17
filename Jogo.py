@@ -39,6 +39,7 @@ bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
 cogumelo_img= pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
+coracao = pygame.font.Font('assets/PressStart2P.ttf', 28)
 piscando_anim = []
 
 for i in range(0,8):
@@ -389,11 +390,17 @@ def game_screen(window):
             fundo_rect2.y -= fundo_rect2.height
         window.blit(fundo, fundo_rect2)
        
-
         # Desenhando espinhos
         todos_sprites.draw(window)
         window.blit(plataforma.image, plataforma.rect)
         #window.blit(peach.image, peach.rect)
+
+        # Desenhando as vidas
+        text_surface = coracao.render(chr(9829) * vidas, True, (255, 0, 0))
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (10,10)
+        window.blit(text_surface, text_rect)
+
         pygame.display.update()
 
 game_screen(window)
