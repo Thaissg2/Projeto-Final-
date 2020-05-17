@@ -50,7 +50,7 @@ for i in range(0,8):
     piscando_anim.append(img)
 
 # Carrega os sons do jogo
-trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora.wav')
+trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
 #trilha_sonora = pygame.mixer.music.set_volume(1)
 
 som_morte = pygame.mixer.Sound('assets/morte.wav')
