@@ -285,11 +285,11 @@ class Cogumelo(pygame.sprite.Sprite):
         self.rect.y += self.velocidadey
         # Se o cogumelo passar do final da tela, volta para cima e sorteia a nova posição
         if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
-            self.image = espinho_img
+            self.image = cogumelo_img
             self.rect = self.image.get_rect()
             self.rect.x = random.randint(0, LARGURA-COGUMELO_LARGURA)
             self.rect.y = random.randint(-200, -COGUMELO_ALTURA)
-            self.velocidadex = random.choice([-5,-4,-3,3,4,5])
+            self.velocidadex = random.choice([0])
             self.velocidadey = 6
 
         #Se colidiu com algum bloco, volta para o ponto anterior
