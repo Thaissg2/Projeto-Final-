@@ -233,9 +233,9 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = 0
-        self.rect.y = 0
+        self.rect.bottom = 0
         self.velocidadex = 0
-        self.velocidadey = 3
+        self.velocidadey = 5
         self.blocks = blocos
 
 
@@ -250,7 +250,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         for colisão in colisões:
             self.velocidadey = 0 
             if self.velocidadex == 0:
-                self.velocidadex = 3
+                self.velocidadex = 5
 
 
 
@@ -378,10 +378,10 @@ def game_screen(window):
         todos_cogumelos.add(cogumelo)
 
     # Criando os espinhos gigantes
-    for i in range(1):
-        gigante = EspinhoGigante(espinho_gigante_img, blocos)
-        todos_sprites.add(gigante)
-        todos_espinhos_gigantes.add(gigante)
+    #for i in range(1):
+    #    gigante = EspinhoGigante(espinho_gigante_img, blocos)
+    #    todos_sprites.add(gigante)
+    #    todos_espinhos_gigantes.add(gigante)
 
 
     plataforma = Plataforma(plataforma_img)
@@ -449,9 +449,9 @@ def game_screen(window):
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
-            if atual - espinho_gigante > 10000:
+            if atual - espinho_gigante > 60000:
                 espinho_gigante = atual
-                g = Espinho(espinho_gigante_img, blocos)
+                g = EspinhoGigante(espinho_gigante_img, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)        
 
