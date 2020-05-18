@@ -55,6 +55,7 @@ trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
 
 som_morte = pygame.mixer.Sound('assets/morte.wav')
 som_cogumelo = pygame.mixer.Sound('assets/som_cogumelo.wav')
+som_dano= pygame.mixer.Sound('assets/som_dano.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -418,6 +419,7 @@ def game_screen(window):
                 #todos_cogumelos.add(c)            
 
             if len(dano) > 0:
+                som_dano.play()
                 jogador.kill()
                 vidas -= 1
                 contato = Contato(jogador.rect.center, piscando_anim)
