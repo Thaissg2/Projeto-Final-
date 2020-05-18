@@ -26,6 +26,9 @@ PEACH_ALTURA = 125
 BLOCO_TAMANHO = 40
 COGUMELO_ALTURA = 35
 COGUMELO_LARGURA = 35
+GIGANTE_ALTURA = 200
+GIGANTE_LARGURA = 200
+
 font = pygame.font.SysFont(None, 48)
 fundo = pygame.image.load('assets/fundo2.jpg').convert_alpha()
 fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
@@ -39,11 +42,14 @@ bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
 cogumelo_img= pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
+espinho_gigante_img = pygame.image.load('assets/espinho2.png').convert_alpha()
+espinho_gigante_img = pygame.transform.scale(espinho_gigante_img, (GIGANTE_LARGURA, GIGANTE_ALTURA))
+
 coracao = pygame.font.Font('assets/PressStart2P.ttf', 28)
 piscando_anim = []
 
 for i in range(0,8):
-    #Definindo animmacao do dano
+    # Definindo animmação do dano
     arquivo_anim = 'assets/piscando{}.png'.format(i)
     img = pygame.image.load(arquivo_anim).convert_alpha()
     img = pygame.transform.scale(img, (75, 125))
@@ -133,46 +139,46 @@ class Peach(pygame.sprite.Sprite):
         self.velocidadey = 0
 
     def update(self):
-        #Atualização da posição da Peach
-        #No eixo y
+        # Atualização da posição da Peach
+        # No eixo y
         self.velocidadey += GRAVIDADE
         if self.velocidadey > 0:
             self.state = CAINDO
-        #Atualiza posição y
+        # Atualiza posição y
         self.rect.y += self.velocidadey
-        #Se colidiu com algum bloco, volta para o ponto anterior
+        # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
-        #Corrige a posição do personagem para antes da colisão
+        # Corrige a posição do personagem para antes da colisão
         for colisão in colisões:
             if self.velocidadey > 0:
                 self.rect.bottom = colisão.rect.top
-                #Se colidiu com algo para de cair
+                # Se colidiu com algo para de cair
                 self.velocidadey = 0
-                #Atualiza a posição para parado
+                # Atualiza a posição para parado
                 self.state = PARADO
             elif self.velocidadey < 0:
                 self.rect.top = colisão.rect.top
-                #Se colidiu com algo para de cair
+                # Se colidiu com algo para de cair
                 self.velocidadey = 0
-                #Atualiza a posição para parado
+                # Atualiza a posição para parado
                 self.state = PARADO
-        #No eixo x
+        # No eixo x
         self.rect.x += self.velocidadex
-        #Corrige a posição caso tenha passado o tamanho da janela
+        # Corrige a posição caso tenha passado o tamanho da janela
         if self.rect.left < 0:
             self.rect.left = 0
         elif self.rect.right > LARGURA:
             self.rect.right = LARGURA - 1
-        #Se colidiu com algum bloco, volta para o ponto anterior
+        # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
-        #Corrige a posição do personagem para antes da colisão
+        # Corrige a posição do personagem para antes da colisão
         for colisão in colisões:
             if self.velocidadex > 0:
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
                 self.rect.left = colisão.rect.right
     
-    #Método que faz o personagem pular
+    # Método que faz o personagem pular
     def jump (self):
         if self.state == PARADO:
             self.velocidadey -= PULO
@@ -212,13 +218,43 @@ class Espinho(pygame.sprite.Sprite):
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
 
-        #Se colidiu com algum bloco, volta para o ponto anterior
+        # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
-        #Corrige a posição do espinho antes da colisão
+        # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0
 
-#Classe que representa contato da peach com espinho
+
+class EspinhoGigante(pygame.sprite.Sprite):
+    def __init__(self, espinho_gigante_img, blocos):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+        self.image = espinho_gigante_img
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = 0
+        self.rect.y = 0
+        self.velocidadex = 0
+        self.velocidadey = 3
+        self.blocks = blocos
+
+
+    def update(self):
+        # Atualizando a posição do espinho gigante
+        self.rect.x += self.velocidadex
+        self.rect.y += self.velocidadey
+
+        # Se colidiu com algum bloco, volta para o ponto anterior
+        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        # Corrige a posição do espinho antes da colisão
+        for colisão in colisões:
+            self.velocidadey = 0 
+            if self.velocidadex == 0:
+                self.velocidadex = 3
+
+
+
+# Classe que representa contato da Peach com espinho
 class Contato(pygame.sprite.Sprite):
     # Construtor da classe.
     def __init__(self, center, piscando_anim):
@@ -286,25 +322,17 @@ class Cogumelo(pygame.sprite.Sprite):
         # Atualizando a posição do cogumelo
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
-        # Se o cogumelo passar do final da tela, volta para cima e sorteia a nova posição
-        if self.rect.top > ALTURA or self.rect.right < 0 or self.rect.left > LARGURA:
-            self.image = cogumelo_img
-            self.rect = self.image.get_rect()
-            self.rect.x = random.randint(0, LARGURA-COGUMELO_LARGURA)
-            self.rect.y = random.randint(-200, -COGUMELO_ALTURA)
-            self.velocidadex = random.choice([0])
-            self.velocidadey = 6
 
-        #Se colidiu com algum bloco, volta para o ponto anterior
+        # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
-        #Corrige a posição do espinho antes da colisão
+        # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0 
             if self.velocidadex == 0:
                 self.velocidadex = random.choice([-5,-4, 4, 5])
 
 
-#Classe que representa a plataforma
+# Classe que representa a plataforma
 class Plataforma(pygame.sprite.Sprite):
     def __init__(self, img):
         # Construtor da classe mãe (Sprite).
@@ -318,9 +346,10 @@ def game_screen(window):
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
     todos_cogumelos = pygame.sprite.Group()
+    todos_espinhos_gigantes = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
 
-    #Carregando fundo do jogo
+    # Carregando fundo do jogo
     fundo_rect = fundo.get_rect()
 
     # Criando o jogador
@@ -348,6 +377,13 @@ def game_screen(window):
         todos_sprites.add(cogumelo)
         todos_cogumelos.add(cogumelo)
 
+    # Criando os espinhos gigantes
+    for i in range(1):
+        gigante = EspinhoGigante(espinho_gigante_img, blocos)
+        todos_sprites.add(gigante)
+        todos_espinhos_gigantes.add(gigante)
+
+
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
 
@@ -363,6 +399,7 @@ def game_screen(window):
     # ===== Loop principal =====
 
     ultimo_cogumelo = pygame.time.get_ticks()
+    espinho_gigante = pygame.time.get_ticks()
     trilha_sonora.play()
 
     while estado != FINAL:
@@ -396,35 +433,37 @@ def game_screen(window):
         # Atualizando a posição dos espinhos
         todos_sprites.update()
 
-        #Atualiza posicao da imagem de fundo
+        # Atualiza posicao da imagem de fundo
         fundo_rect.y -= VELOCIDADE_FUNDO
 
-        #Verifica se o fundo saiu para baixo
+        # Verifica se o fundo saiu para baixo
         if fundo_rect.top > ALTURA:
             fundo_rect.y -= fundo_rect.height
 
-        #---- Verifica se houve dano entre Peach e Espinho
+        # ---- Verifica se houve dano entre Peach e Espinho
         if estado == JOGANDO:
             atual = pygame.time.get_ticks()
             if atual - ultimo_cogumelo > 45000:
                 ultimo_cogumelo = atual
                 c = Cogumelo(cogumelo_img, blocos)
                 todos_sprites.add(c)
-                todos_cogumelos.add(c)            
+                todos_cogumelos.add(c)      
+
+            if atual - espinho_gigante > 10000:
+                espinho_gigante = atual
+                g = Espinho(espinho_gigante_img, blocos)
+                todos_sprites.add(g)
+                todos_espinhos_gigantes.add(g)        
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
+            dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
+
             for esp in dano:
             # O espinho é destruido e precisa ser recriado
                 e = Espinho(espinho_img, blocos)
                 todos_sprites.add(e)
-                todos_espinhos.add(e)
-            
-            #for cog in ganhando_vida:
-            # O espinho é destruido e precisa ser recriado
-                #c = Cogumelo(cogumelo_img, blocos)
-                #todos_sprites.add(c)
-                #todos_cogumelos.add(c)            
+                todos_espinhos.add(e)  
 
             if len(dano) > 0:
                 som_dano.play()
@@ -440,6 +479,18 @@ def game_screen(window):
             if len(ganhando_vida) > 0:
                 som_cogumelo.play()
                 vidas += 1
+
+            if len(dano_gigante) > 0:
+                som_dano.play()
+                jogador.kill()
+                vidas -= 1
+                contato = Contato(jogador.rect.center, piscando_anim)
+                todos_sprites.add(contato)
+                estado = MORRENDO
+                keys_down = {}
+                piscando_tick = pygame.time.get_ticks()
+                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+
 
         elif estado == MORRENDO:
             atual = pygame.time.get_ticks()
@@ -458,10 +509,10 @@ def game_screen(window):
         # ----- Gera saídas
         window.fill((0, 0, 0))  # Preenche com a cor branca
 
-        #Alem disso, deve ser cíclica, ou seja, a parte de cima deve ser continuacao da parte de baixo
+        # Além disso, deve ser cíclica, ou seja, a parte de cima deve ser continuação da parte de baixo
         window.blit(fundo, fundo_rect)
 
-        #Desenha o fundo com cópia pra cima
+        # Desenha o fundo com cópia pra cima
         fundo_rect2 = fundo_rect.copy()
         if fundo_rect.top > 0:
             fundo_rect2.y -= fundo_rect2.height
