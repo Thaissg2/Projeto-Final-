@@ -205,6 +205,7 @@ class Espinho(pygame.sprite.Sprite):
             espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
             espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
             self.image = espinho_img
+            self.mask = pygame.mask.from_surface(self.image)
             self.rect = self.image.get_rect()
             self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
@@ -361,7 +362,7 @@ def game_screen(window):
 
     # ===== Loop principal =====
 
-
+    ultimo_cogumelo = pygame.time.get_ticks()
     trilha_sonora.play()
 
     while estado != FINAL:
@@ -404,17 +405,24 @@ def game_screen(window):
 
         #---- Verifica se houve dano entre Peach e Espinho
         if estado == JOGANDO:
+            atual = pygame.time.get_ticks()
+            if atual - ultimo_cogumelo > 45000:
+                ultimo_cogumelo = atual
+                c = Cogumelo(cogumelo_img, blocos)
+                todos_sprites.add(c)
+                todos_cogumelos.add(c)            
+
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
-            #for esp in dano:
+            for esp in dano:
             # O espinho é destruido e precisa ser recriado
-                #e = Espinho(espinho_img)
-                #todos_sprites.add(e)
-                #todos_espinhos.add(e)
+                e = Espinho(espinho_img, blocos)
+                todos_sprites.add(e)
+                todos_espinhos.add(e)
             
             #for cog in ganhando_vida:
             # O espinho é destruido e precisa ser recriado
-                #c = Cogumelo(cogumelo_img)
+                #c = Cogumelo(cogumelo_img, blocos)
                 #todos_sprites.add(c)
                 #todos_cogumelos.add(c)            
 
