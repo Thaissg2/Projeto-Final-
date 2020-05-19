@@ -41,7 +41,7 @@ peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
 bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
 cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
-cogumelo_img= pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
+cogumelo_img = pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
 espinho_gigante_img = pygame.image.load('assets/espinho2.png').convert_alpha()
 espinho_gigante_img = pygame.transform.scale(espinho_gigante_img, (GIGANTE_LARGURA, GIGANTE_ALTURA))
 
@@ -57,11 +57,9 @@ for i in range(0,8):
 
 # Carrega os sons do jogo
 trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
-#trilha_sonora = pygame.mixer.music.set_volume(1)
-
 som_morte = pygame.mixer.Sound('assets/morte.wav')
 som_cogumelo = pygame.mixer.Sound('assets/som_cogumelo.wav')
-som_dano= pygame.mixer.Sound('assets/som_dano.wav')
+som_dano = pygame.mixer.Sound('assets/som_dano.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -410,7 +408,7 @@ def game_screen(window):
     keys_down = {}
 
     # ===== Loop principal =====
-
+    #tela_jogo = pygame.time.get_ticks()
     ultimo_cogumelo = pygame.time.get_ticks()
     espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
@@ -474,6 +472,10 @@ def game_screen(window):
                 p = PlataformaMóvel(bloco_img, blocos)
                 todos_sprites.add(p)
                 blocos.add(p)
+        
+
+        #if atual - tela_jogo > 10000:
+            #estado = MORRENDO
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
@@ -503,7 +505,6 @@ def game_screen(window):
 
             if len(pisando) > 0:
                 self.velocidadey = 0
-
 
 
             if len(dano_gigante) > 0:
