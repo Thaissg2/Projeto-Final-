@@ -253,24 +253,24 @@ class EspinhoGigante(pygame.sprite.Sprite):
                 self.velocidadex = 5
 
 # Construindo classe da Plataforma Móvel
-#class PlataformaMóvel(pygame.sprite.Sprite):
-#    def __init__(self, espinho_gigante_img, blocos):
-#        # Construtor da classe mãe (Sprite).
-#        pygame.sprite.Sprite.__init__(self)
-#        self.image = bloco_img
-#        self.mask = pygame.mask.from_surface(self.image)
-#        self.rect = self.image.get_rect()
-#        self.rect.x = LARGURA/2
-#        self.rect.bottom = 0
-#        self.velocidadex = 0
-#        self.velocidadey = 2
-#        self.blocks = blocos
-#
-#
-#    def update(self):
-#        # Atualizando a posição da plataforma móvel
-#        self.rect.x += self.velocidadex
-#        self.rect.y += self.velocidadey
+class PlataformaMóvel(pygame.sprite.Sprite):
+    def __init__(self, espinho_gigante_img, blocos):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+        self.image = bloco_img
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = LARGURA/2
+        self.rect.bottom = 0
+        self.velocidadex = 0
+        self.velocidadey = 2
+        self.blocks = blocos
+
+
+    def update(self):
+        # Atualizando a posição da plataforma móvel
+        self.rect.x += self.velocidadex
+        self.rect.y += self.velocidadey
 
 
 # Classe que representa contato da Peach com espinho
@@ -413,7 +413,7 @@ def game_screen(window):
 
     ultimo_cogumelo = pygame.time.get_ticks()
     espinho_gigante = pygame.time.get_ticks()
-    #ultima_plataforma = pygame.time.get_ticks()
+    ultima_plataforma = pygame.time.get_ticks()
     trilha_sonora.play()
 
     while estado != FINAL:
@@ -469,16 +469,16 @@ def game_screen(window):
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
-            #if atual - ultima_plataforma > 10000:
-            #    ultima_plataforma = atual
-            #    p = PlataformaMóvel(bloco_img, blocos)
-            #    todos_sprites.add(p)
-            #    blocos.add(p)
+            if atual - ultima_plataforma > 10000:
+                ultima_plataforma = atual
+                p = PlataformaMóvel(bloco_img, blocos)
+                todos_sprites.add(p)
+                blocos.add(p)
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
-            #pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
+            pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
 
             for esp in dano:
             # O espinho é destruido e precisa ser recriado
@@ -501,8 +501,8 @@ def game_screen(window):
                 som_cogumelo.play()
                 vidas += 1
 
-            #if len(pisando) > 0:
-            #    self.velocidadey = 0
+            if len(pisando) > 0:
+                self.velocidadey = 0
 
 
 
