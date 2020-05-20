@@ -3,6 +3,7 @@ from Configuração import *
 from Assets import *
 from Sprites import Blocos, Peach, Espinho, EspinhoGigante, PlataformaMóvel, Contato, Cogumelo, Plataforma
 
+window = pygame.display.set_mode((LARGURA, ALTURA))
 
 def game_screen(window):
     # Ajusta a velocidade do jogo
@@ -37,23 +38,23 @@ def game_screen(window):
                 blocos.add(tile)
                 
     # Cria o jogador
-    jogador = Peach(assepeach_img, 14, 0, blocos)
+    jogador = Peach(assets[PEACH_IMG], 14, 0, blocos)
     todos_sprites.add(jogador)
     
     # Cria os espinhos
     for i in range(4):
-        espinho= Espinho(espinho_img, blocos)
+        espinho= Espinho(assets[ESPINHO_IMG], blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
         
     # Cria os cogumelos
     for i in range(1):
-        cogumelo = Cogumelo(cogumelo_img, blocos)
+        cogumelo = Cogumelo(assets[COGUMELO_IMG], blocos)
         todos_sprites.add(cogumelo)
         todos_cogumelos.add(cogumelo)
 
     # Cria a plataforma
-    plataforma = Plataforma(plataforma_img)
+    plataforma = Plataforma(assets[PLATAFORMA_IMG])
     blocos.add(plataforma)
 
     # Cria os estados do jogo
@@ -117,21 +118,21 @@ def game_screen(window):
             # Recria o cogumelo após 45 segundos
             if atual - ultimo_cogumelo > 45000:
                 ultimo_cogumelo = atual
-                c = Cogumelo(cogumelo_img, blocos)
+                c = Cogumelo(assets[COGUMELO_IMG], blocos)
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
             # Recria o cogumelo após 60 segundos
             if atual - espinho_gigante > 60000:
                 espinho_gigante = atual
-                g = EspinhoGigante(espinho_gigante_img, blocos)
+                g = EspinhoGigante(assets[ESPINHO_GIGANTE_IMG], blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após ALGUM TEMPO --> ATENÇÃO
             if atual - ultima_plataforma > 10000:
                 ultima_plataforma = atual
-                p = PlataformaMóvel(bloco_img, blocos)
+                p = PlataformaMóvel(assets[BLOCO_IMG], blocos)
                 todos_sprites.add(p)
                 blocos.add(p)
         
@@ -147,7 +148,7 @@ def game_screen(window):
 
             # O espinho é destruido e precisa ser recriado
             for esp in dano:
-                e = Espinho(espinho_img, blocos)
+                e = Espinho(assets[ESPINHO_IMG], blocos)
                 todos_sprites.add(e)
                 todos_espinhos.add(e)  
     
@@ -156,7 +157,7 @@ def game_screen(window):
                 assets[SOM_DANO].play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, piscando_anim)
+                contato = Contato(jogador.rect.center, assets[PISCANDO_ANIM])
                 todos_sprites.add(contato)
                 estado = MORRENDO
                 keys_down = {}
@@ -173,7 +174,7 @@ def game_screen(window):
                 assets[SOM_DANO].play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, piscando_anim)
+                contato = Contato(jogador.rect.center, assets[PISCANDO_ANIM])
                 todos_sprites.add(contato)
                 estado = MORRENDO
                 keys_down = {}
@@ -188,25 +189,25 @@ def game_screen(window):
             atual = pygame.time.get_ticks()
             if atual - piscando_tick > piscando_duracao:
                 if vidas == 0:
-                    trilha_sonora.stop()
+                    assets[TRILHA_SONORA].stop()
                     assets[SOM_MORTE].play()
                     time.sleep(2.3)
                     estado = FINAL 
                 else:
                     estado = JOGANDO
-                    jogador = Peach(peach_img, linha, coluna, blocos)
+                    jogador = Peach(assets[PEACH_IMG], linha, coluna, blocos)
                     todos_sprites.add(jogador)
 
         # ----- Gera saídas
         window.fill((0, 0, 0))
         
         # Fazendo o fundo se mover: a parte de cima deve ser continuação da parte de baixo
-        window.blit(fundo, fundo_rect)
+        window.blit(assets[FUNDO], fundo_rect)
         # Desenha o fundo com cópia pra cima
         fundo_rect2 = fundo_rect.copy()
         if fundo_rect.top > 0:
             fundo_rect2.y -= fundo_rect2.height
-        window.blit(fundo, fundo_rect2)
+        window.blit(assets[FUNDO], fundo_rect2)
         
         # Desenha os sprites
         todos_sprites.draw(window)
@@ -220,5 +221,6 @@ def game_screen(window):
         
         pygame.display.update()
 
-#game_screen(window)
-#return ...
+    return END
+
+game_screen(window)
