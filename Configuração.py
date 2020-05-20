@@ -6,7 +6,6 @@ SND_DIR = path.join(path.dirname(__file__), 'assets.2', 'snd')
 FNT_DIR = path.join(path.dirname(__file__), 'assets.2', 'font')
 
 
-
 # Dados gerais do jogo
 LARGURA = 880
 ALTURA = 600

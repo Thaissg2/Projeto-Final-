@@ -1,14 +1,14 @@
 import pygame
-from Configuração import LARGURA, ALTURA, FPS, ESPINHO_LARGURA, ESPINHO_ALTURA, PLATAFORMA_LARGURA, PLATAFORMA_ALTURA, PEACH_LARGURA, PEACH_ALTURA, BLOCO_TAMANHO, COGUMELO_ALTURA, COGUMELO_LARGURA, GIGANTE_ALTURA, GIGANTE_LARGURA, IMG_DIR, SND_DIR, FNT_DIR, PARADO, PULANDO, CAINDO, GRAVIDADE, PULO, VELOCIDADE_X, BLOCO, VAZIO, VELOCIDADE_FUNDO, MAPA
-from Assets import FUNDO, ESPINHO_IMG, PLATAFORMA_IMG, PEACH_IMG, BLOCO_IMG, COGUMELO_IMG, ESPINHO_GIGANTE_IMG. TRILHA_SONORA, SOM_MORTE, SOM_COGUMELO, SOM_DANO
-from sprites import Blocos, Peach, Espinho, EspinhoGigante, PlataformaMóvel, Contato, Cogumelo, plataforma
+from Configuração import *
+from Assets import *
+from Sprites import Blocos, Peach, Espinho, EspinhoGigante, PlataformaMóvel, Contato, Cogumelo, Plataforma
 
 
 def game_screen(window):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
     
-    asserts = load_assets()
+    assets = load_assets()
 
     # Cria os grupos
     todos_sprites = pygame.sprite.Group()
@@ -167,6 +167,7 @@ def game_screen(window):
             if len(ganhando_vida) > 0:
                 assets[SOM_COGUMELO].play()
                 vidas += 1
+
             # Se o jogador encosta no espinho gigante
             if len(dano_gigante) > 0:
                 assets[SOM_DANO].play()
@@ -212,7 +213,7 @@ def game_screen(window):
         window.blit(plataforma.image, plataforma.rect)
 
         # Desenha as vidas
-        text_surface = coracao.render(chr(9829) * vidas, True, (255, 0, 0))
+        text_surface = assets[CORACAO].render(chr(9829) * vidas, True, (255, 0, 0))
         text_rect = text_surface.get_rect()
         text_rect.topleft = (10,10)
         window.blit(text_surface, text_rect)
