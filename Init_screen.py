@@ -1,7 +1,7 @@
 import pygame
 import random
 import os
-from Configuração import IMG_DIR, FPS, JOGANDO, FINAL
+from Configuração import IMG_DIR, FPS, JOGO, QUIT
 from Assets import *
 
 def init_screen(screen):
@@ -28,7 +28,7 @@ def init_screen(screen):
                 running = False
 
             if event.type == pygame.KEYUP:
-                estado = JOGANDO
+                estado = JOGO
                 running = False
 
         # A cada loop, redesenha o fundo

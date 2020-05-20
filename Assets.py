@@ -16,14 +16,18 @@ SOM_MORTE = 'som_morte'
 SOM_COGUMELO = 'som_cogumelo'
 SOM_DANO = 'som_dano'
 
+PISCANDO_ANIM = 'piscando_anim'
+
+CORACAO = 'coracao'
+
 def load_assets():
     # Carrega as imagens do jogo e configura os tamanhos
     assets = {}
 
-    assets[FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'fundo2.png')).convert()
+    assets[FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'fundo2.jpg')).convert()
     assets[FUNDO] = pygame.transform.scale(assets['fundo'], (LARGURA, ALTURA))
 
-    assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.png')).convert()
+    assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpg')).convert()
     assets[INIT_FUNDO] = pygame.transform.scale(assets['init_fundo'], (LARGURA, ALTURA))
 
     assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()

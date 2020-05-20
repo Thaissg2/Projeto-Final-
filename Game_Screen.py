@@ -25,19 +25,19 @@ def game_screen(window):
     grupos['blocos'] = blocos
     
     # Cria fundo do jogo
-    fundo_rect = fundo.get_rect()
+    fundo_rect = assets[FUNDO].get_rect()
 
     # Cria blocos de acordo com o mapa
     for linha in range(len(MAPA)):
         for coluna in range(len(MAPA[linha])):
             tipo_bloco = MAPA[linha][coluna]
             if tipo_bloco == BLOCO:
-                tile = Blocos(bloco_img, linha, coluna)
+                tile = Blocos(assets[BLOCO_IMG], linha, coluna)
                 todos_sprites.add(tile)
                 blocos.add(tile)
                 
     # Cria o jogador
-    jogador = Peach(peach_img, 14, 0, blocos)
+    jogador = Peach(assepeach_img, 14, 0, blocos)
     todos_sprites.add(jogador)
     
     # Cria os espinhos
@@ -221,3 +221,4 @@ def game_screen(window):
         pygame.display.update()
 
 #game_screen(window)
+#return ...
