@@ -1,7 +1,7 @@
 import random
 import pygame
 from Configuração import ESPINHO_LARGURA, ESPINHO_ALTURA, PLATAFORMA_LARGURA, PLATAFORMA_ALTURA, PEACH_LARGURA, PEACH_ALTURA, BLOCO_TAMANHO, COGUMELO_ALTURA, COGUMELO_LARGURA, GIGANTE_ALTURA, GIGANTE_LARGURA, IMG_DIR, SND_DIR, FNT_DIR, PARADO, PULANDO, CAINDO, GRAVIDADE, PULO, VELOCIDADE_X, BLOCO, VAZIO, VELOCIDADE_FUNDO, MAPA
-from Assets import FUNDO, ESPINHO_IMG, PLATAFORMA_IMG, PEACH_IMG, BLOCO_IMG, COGUMELO_IMG, ESPINHO_GIGANTE_IMG. TRILHA_SONORA, SOM_MORTE, SOM_COGUMELO, SOM_DANO
+from Assets import FUNDO, ESPINHO_IMG, PLATAFORMA_IMG, PEACH_IMG, BLOCO_IMG, COGUMELO_IMG, ESPINHO_GIGANTE_IMG, TRILHA_SONORA, SOM_MORTE, SOM_COGUMELO, SOM_DANO
 
 
 # Classe dos blocos
@@ -202,11 +202,11 @@ class Contato(pygame.sprite.Sprite):
             elapsed_ticks = atual - self.last_update
             # Se já está na hora de mudar de imagem...
             if elapsed_ticks > self.frame_ticks:
-            # Marca o tick da nova imagem.
-            self.last_update = atual
-            # Avança um quadro.
-            self.frame += 1
-            # Verifica se já chegou no final da animação.
+                # Marca o tick da nova imagem.
+                self.last_update = atual
+                # Avança um quadro.
+                self.frame += 1
+                # Verifica se já chegou no final da animação.
             if self.frame == len(self.piscando_anim):
                 # Se sim, tchau piscando!
                 self.kill()

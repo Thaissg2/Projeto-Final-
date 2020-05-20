@@ -220,4 +220,4 @@ def game_screen(window):
         
         pygame.display.update()
 
-game_screen(window)
+#game_screen(window)

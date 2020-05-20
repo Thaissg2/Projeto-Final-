@@ -25,9 +25,10 @@ GIGANTE_ALTURA = 200
 GIGANTE_LARGURA = 200
 
 # Estados para controle do jogo
-FINAL = 0
-JOGANDO = 1
-MORRENDO = 2
+INICIO = 0
+JOGO = 1
+QUIT = 2
+END = 3
 
 # Estados do jogador
 PARADO = 0

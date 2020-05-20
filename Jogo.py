@@ -38,8 +38,8 @@ plataforma_img = pygame.image.load('assets/plataforma.png').convert_alpha()
 plataforma_img = pygame.transform.scale(plataforma_img, (PLATAFORMA_LARGURA, PLATAFORMA_ALTURA))
 peach_img = pygame.image.load('assets/Peach2.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
-bloco_img =  pygame.image.load('assets/bloco.jpg').convert_alpha()
-bloco_img = pygame.transform.scale(bloco_img, (BLOCO_TAMANHO, BLOCO_TAMANHO))
+bloco_img =  pygame.image.load('assets/plataforma_movel.png').convert_alpha()
+bloco_img = pygame.transform.scale(bloco_img, (150, BLOCO_TAMANHO))
 cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
 cogumelo_img = pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
 espinho_gigante_img = pygame.image.load('assets/espinho2.png').convert_alpha()
@@ -320,7 +320,7 @@ class Contato(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
-#Classe cogumelo
+# Classe cogumelo
 class Cogumelo(pygame.sprite.Sprite):
     def __init__(self, cogumelo_img, blocos):
         # Construtor da classe mãe (Sprite).
@@ -383,7 +383,7 @@ def game_screen(window):
     todos_sprites.add(jogador)
     
     # Criando os espinhos
-    for i in range(4):
+    for i in range(1):
         espinho= Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
