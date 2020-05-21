@@ -1,40 +1,43 @@
 import random
 import pygame
-from Configuração import ESPINHO_LARGURA, ESPINHO_ALTURA, PLATAFORMA_LARGURA, PLATAFORMA_ALTURA, PEACH_LARGURA, PEACH_ALTURA, BLOCO_TAMANHO, COGUMELO_ALTURA, COGUMELO_LARGURA, GIGANTE_ALTURA, GIGANTE_LARGURA, IMG_DIR, SND_DIR, FNT_DIR, PARADO, PULANDO, CAINDO, GRAVIDADE, PULO, VELOCIDADE_X, BLOCO, VAZIO, VELOCIDADE_FUNDO, MAPA
-from Assets import FUNDO, ESPINHO_IMG, PLATAFORMA_IMG, PEACH_IMG, BLOCO_IMG, COGUMELO_IMG, ESPINHO_GIGANTE_IMG, TRILHA_SONORA, SOM_MORTE, SOM_COGUMELO, SOM_DANO
+from Configuração import *
+from Assets import *
 
 
 # Classe dos blocos
 class Blocos(pygame.sprite.Sprite):
-    def __init__(self, bloco_img, linha, coluna):
+    def __init__(self, grupos, assets):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do bloco.
-        self.image = bloco_img
+        self.image = assets[BLOCO_IMG]
         # Detalhes sobre o posicionamento.
         self.rect = self.image.get_rect()
         # Posiciona o bloco
         self.rect.x = BLOCO_TAMANHO * coluna
         self.rect.y = BLOCO_TAMANHO * linha
+        self.grupos = blocos
+        self.assets = assets
 
 # Classe do jogador
 class Peach(pygame.sprite.Sprite):
-    def __init__(self, peach_img, linha, coluna, blocos):
+    def __init__(self, grupos, assets):
         pygame.sprite.Sprite.__init__(self)
         # Define o estado atual do jogador
         self.state = PARADO
         # Define a imagem do jogador
-        self.image = peach_img
+        self.image = assets[PEACH_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
         # Guarda o grupo de blocos
-        self.blocks = blocos
+        self.grupos = blocos
         # Posiciona o personagem
         self.rect.x = coluna * BLOCO_TAMANHO
         self.rect.centerx = LARGURA/2
         self.rect.bottom = linha * BLOCO_TAMANHO
         self.velocidadex = 0
         self.velocidadey = 0
+        self.assets = assets
 
     def update(self):
         # Atualização da posição do jogador no eixo y
@@ -83,10 +86,10 @@ class Peach(pygame.sprite.Sprite):
 
 # Classe do espinho
 class Espinho(pygame.sprite.Sprite):
-    def __init__(self, espinho_img, blocos):
+    def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do espinho
-        self.image = espinho_img
+        self.image = assets[ESPINHO_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -95,9 +98,10 @@ class Espinho(pygame.sprite.Sprite):
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
-        self.blocks = blocos
+        self.grupos = blocos
+        self.assets = assets
 
-    def update(self):
+    def update(self, assets, grupos):
         # Atualizando a posição do espinho
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
@@ -107,10 +111,10 @@ class Espinho(pygame.sprite.Sprite):
             ESPINHO_ALTURA = random.randint(50,130)
             ESPINHO_LARGURA = ESPINHO_ALTURA
             # Recarrega as imagens com o novo tamanho
-            espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
-            espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
+            assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
+            assets[ESPINHO_IMG] = pygame.transform.scale(assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
             # Define a imagem do espinho
-            self.image = espinho_img
+            self.image = assets[ESPINHO_IMG]
             self.mask = pygame.mask.from_surface(self.image)
             # Posiciona o espinho no jogo
             self.rect = self.image.get_rect()
@@ -119,6 +123,8 @@ class Espinho(pygame.sprite.Sprite):
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+            self.grupos = blocos
+            self.assets = assets
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
@@ -127,10 +133,10 @@ class Espinho(pygame.sprite.Sprite):
 
 # Classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
-    def __init__(self, espinho_gigante_img, blocos):
+    def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem da classe
-        self.image = espinho_gigante_img
+        self.image = assets[ESPINHO_GIGANTE_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -140,7 +146,8 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 5
         # Guarda o grupos de blocos
-        self.blocks = blocos
+        self.grupos = blocos
+        self.assets = assets
 
     def update(self):
         # Atualizando a posição do espinho gigante
@@ -156,10 +163,10 @@ class EspinhoGigante(pygame.sprite.Sprite):
 
 # Classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
-    def __init__(self, espinho_gigante_img, blocos):
+    def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem da classe
-        self.image = bloco_img
+        self.image = assets[BLOCO_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhes sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -169,7 +176,8 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 2
         # Guarda o grupo de blocos
-        self.blocks = blocos
+        self.grupos = blocos
+        self.assets = assets
         
     def update(self):
         # Atualizando a posição da plataforma móvel
@@ -178,10 +186,10 @@ class PlataformaMóvel(pygame.sprite.Sprite):
 
 # Classe que representa contato da Peach com espinho
 class Contato(pygame.sprite.Sprite):
-    def __init__(self, center, piscando_anim):
+    def __init__(self, center, assets):
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação de explosão
-        self.piscando_anim = piscando_anim
+        self.piscando_anim = assets[PISCANDO_ANIM]
         # Inicia o processo de animação colocando a primeira imagem na tela.
         # Armazena o índice atual na animação
         self.frame = 0
@@ -219,10 +227,10 @@ class Contato(pygame.sprite.Sprite):
 
 # Classe do Cogumelo
 class Cogumelo(pygame.sprite.Sprite):
-    def __init__(self, cogumelo_img, blocos):
+    def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Armazena a imagem do cogumelo
-        self.image = cogumelo_img
+        self.image = assets[COGUMELO_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Define a posição do cogumelo
         self.rect = self.image.get_rect()
@@ -231,7 +239,8 @@ class Cogumelo(pygame.sprite.Sprite):
         self.rect.y = random.randint(-100, -COGUMELO_ALTURA)
         self.velocidadex = 0
         self.velocidadey = 6
-        self.blocks = blocos
+        self.grupos = blocos
+        self.assets = assets
 
     def update(self):
         # Atualizando a posição do cogumelo
@@ -247,8 +256,9 @@ class Cogumelo(pygame.sprite.Sprite):
 
 # Classe da plataforma fixa
 class Plataforma(pygame.sprite.Sprite):
-    def __init__(self, plataforma_img):
+    def __init__(self, assets):
         pygame.sprite.Sprite.__init__(self)
-        self.image = plataforma_img
+        self.image = assets[PLATAFORMA_IMG]
         self.rect = self.image.get_rect()
         self.rect.bottom = ALTURA
+        self.assets = assets

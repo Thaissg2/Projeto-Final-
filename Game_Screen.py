@@ -1,7 +1,7 @@
 import pygame
 from Configuração import *
 from Assets import *
-from Sprites import Blocos, Peach, Espinho, EspinhoGigante, PlataformaMóvel, Contato, Cogumelo, Plataforma
+from Sprites import *
 
 window = pygame.display.set_mode((LARGURA, ALTURA))
 
@@ -33,17 +33,17 @@ def game_screen(window):
         for coluna in range(len(MAPA[linha])):
             tipo_bloco = MAPA[linha][coluna]
             if tipo_bloco == BLOCO:
-                tile = Blocos(assets[BLOCO_IMG], linha, coluna)
+                tile = Blocos(assets[BLOCO_IMG], grupos)
                 todos_sprites.add(tile)
                 blocos.add(tile)
                 
     # Cria o jogador
-    jogador = Peach(assets[PEACH_IMG], 14, 0, blocos)
+    jogador = Peach(assets[PEACH_IMG], 14, 0, grupos)
     todos_sprites.add(jogador)
     
     # Cria os espinhos
     for i in range(4):
-        espinho= Espinho(assets[ESPINHO_IMG], blocos)
+        espinho= Espinho(assets[ESPINHO_IMG], grupos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
         

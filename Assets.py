@@ -66,5 +66,5 @@ def load_assets():
     assets[SOM_MORTE] = pygame.mixer.Sound(os.path.join(SND_DIR, 'morte.wav'))
     assets[SOM_COGUMELO] = pygame.mixer.Sound(os.path.join(SND_DIR, 'som_cogumelo.wav'))
     assets[SOM_DANO] = pygame.mixer.Sound(os.path.join(SND_DIR, 'som_dano.wav'))
-
+    
     return assets
