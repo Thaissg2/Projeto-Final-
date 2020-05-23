@@ -1,6 +1,6 @@
 import pygame
 import os
-from Configuração import *
+from Configuracao import *
 
 FUNDO = 'fundo'
 INIT_FUNDO = 'init_fundo'

@@ -1,7 +1,7 @@
 import pygame
 import random
 import os
-from Configuração import IMG_DIR, FPS, JOGO, QUIT
+from Configuracao import IMG_DIR, FPS, JOGO, QUIT
 from Assets import *
 
 def init_screen(screen):

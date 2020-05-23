@@ -1,5 +1,5 @@
 import pygame
-from Configuração import *
+from Configuracao import *
 from Assets import *
 from Sprites import *
 

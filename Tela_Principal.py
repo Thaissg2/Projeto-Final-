@@ -1,7 +1,7 @@
 import pygame
 import random
 import os
-from Configuração import LARGURA, ALTURA, INICIO, JOGO, QUIT
+from Configuracao import LARGURA, ALTURA, INICIO, JOGO, QUIT
 from Init_screen import init_screen
 from Game_Screen import game_screen
 
