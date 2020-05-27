@@ -460,9 +460,12 @@ def game_screen(window):
     plataforma = Plataforma(plataforma_img)
     blocos.add(plataforma)
 
-    FINAL = 0
-    JOGANDO = 1
-    MORRENDO = 2
+    FINAL = 0 #Estado para a tela fechar
+    JOGANDO = 1 #Estado enquanto a personagem tem vidas
+    MORRENDO = 2 #Estado quando a personagem não tem mais vidas ()
+    PERDENDO_VIDAS = 3 #Estado quando a personagem perde uma vida
+    GANHANDO = 4 #Estado quando acabou o tempo e o jogador não perdeu
+
     estado = JOGANDO
 
 
@@ -538,10 +541,7 @@ def game_screen(window):
 
             if atual - comeco_jogo > 1000000:
                 estado = FINAL
-        
 
-        #if atual - tela_jogo > 10000:
-            #estado = MORRENDO
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
@@ -557,9 +557,10 @@ def game_screen(window):
             if len(dano) > 0:
                 jogador.kill()
                 vidas -= 1
-                estado = MORRENDO
+                estado = PERDENDO_VIDAS
                 jogador.kill()
                 if vidas == 0:
+                    estado = MORRENDO
                     trilha_sonora.stop()
                     som_morte.play()
                     game_over = GameOver(jogador.rect.center, diminuindo_anim)
@@ -580,15 +581,16 @@ def game_screen(window):
                 som_cogumelo.play()
                 vidas += 1
 
-            if len(pisando) > 0:
-                self.velocidadey = 0
+            #if len(pisando) > 0:
+                #self.velocidadey = 0
 
 
             if len(dano_gigante) > 0:
                 jogador.kill()
                 vidas -= 1
-                estado = MORRENDO
+                estado = PERDENDO_VIDAS
                 if vidas == 0:
+                    estado = MORRENDO
                     trilha_sonora.stop()
                     som_morte.play()
                     game_over = GameOver(jogador.rect.center, diminuindo_anim)
@@ -605,24 +607,7 @@ def game_screen(window):
                 keys_down = {}
 
 
-        elif estado == MORRENDO:
-            # atual = pygame.time.get_ticks()
-            # if atual - piscando_tick > piscando_duracao:
-            # jogador.kill()
-            # if vidas == 0:
-            #     trilha_sonora.stop()
-            #     som_morte.play()
-            #     game_over = GameOver(jogador.rect.center, diminuindo_anim)
-            #     todos_sprites.add(game_over)
-            #     keys_down = {}
-            #     piscando_tick = pygame.time.get_ticks()
-            #     piscando_duracao = game_over.frame_ticks * len(game_over.diminuindo_anim)
-            #     time.sleep(2.3)
-            #     estado = FINAL 
-            # else:
-            #     estado = JOGANDO
-            #     jogador = Peach(peach_img, linha, coluna, blocos)
-            #     todos_sprites.add(jogador)
+        elif estado == PERDENDO_VIDAS:
             if not game_over.alive():
                 estado = FINAL
 
