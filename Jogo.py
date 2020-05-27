@@ -57,14 +57,10 @@ for i in range(0,8):
     piscando_anim.append(img)
 
 
-lista_flirby =  [30, 15, 1]
-lista_thats = [50, 25, 0]
+lista_animacao =  [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 
-
-
-for i in lista_flirby:
-     # Definindo animação da morte
-     #arquivo_anim2 = 'assets/diminuindo{}.png'.format(i)
+for i in lista_animacao:
+     # Definindo animação da morte'
       img2 = pygame.image.load('assets/Peach2.png').convert_alpha()
       img2 = pygame.transform.scale(img2, (3*i, 5*i))
       diminuindo_anim.append(img2)
@@ -359,7 +355,7 @@ class GameOver(pygame.sprite.Sprite):
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
         # próxima imagem da animação será mostrada
-        self.frame_ticks = 500
+        self.frame_ticks = 101
  
     def update(self):
         # Verifica o tick atual.
