@@ -7,12 +7,12 @@ import time
 
 pygame.init()
 pygame.mixer.init()
- 
+
 # ----- Gera tela principal
 LARGURA = 880
 ALTURA = 600
 window = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption('Super Maria Sis')
+pygame.display.set_caption('New Super Peach Sis')
 # Variável para o ajuste de velocidade
 FPS = 30
 
@@ -47,6 +47,7 @@ espinho_gigante_img = pygame.transform.scale(espinho_gigante_img, (GIGANTE_LARGU
 
 coracao = pygame.font.Font('assets/PressStart2P.ttf', 28)
 piscando_anim = []
+diminuindo_anim = []
 
 for i in range(0,8):
     # Definindo animmação do dano
@@ -54,6 +55,19 @@ for i in range(0,8):
     img = pygame.image.load(arquivo_anim).convert_alpha()
     img = pygame.transform.scale(img, (75, 125))
     piscando_anim.append(img)
+
+
+lista_flirby =  [30, 15, 1]
+lista_thats = [50, 25, 0]
+
+
+
+for i in lista_flirby:
+     # Definindo animação da morte
+     #arquivo_anim2 = 'assets/diminuindo{}.png'.format(i)
+      img2 = pygame.image.load('assets/Peach2.png').convert_alpha()
+      img2 = pygame.transform.scale(img2, (3*i, 5*i))
+      diminuindo_anim.append(img2)
 
 # Carrega os sons do jogo
 trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
@@ -129,7 +143,7 @@ class Peach(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # Guarda o grupo de blocos
         self.blocks = blocos
-        # Posiciona o personagem
+        # Posiciona a personagem
         self.rect.x = coluna * BLOCO_TAMANHO
         self.rect.centerx = LARGURA/2
         self.rect.bottom = linha * BLOCO_TAMANHO
@@ -220,7 +234,10 @@ class Espinho(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0
+            if self.velocidadex > 0:
+                self.rect.right = colisão.rect.left
+            elif self.velocidadex < 0:
+                self.rect.left = colisão.rect.right
 
 # Costruindo classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
@@ -278,7 +295,7 @@ class Contato(pygame.sprite.Sprite):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
  
-        # Armazena a animação de explosão
+        # Armazena a animação da morte
         self.piscando_anim = piscando_anim
  
         # Inicia o processo de animação colocando a primeira imagem na tela.
@@ -317,6 +334,55 @@ class Contato(pygame.sprite.Sprite):
                 # Se ainda não chegou ao fim da piscada, troca de imagem.
                 center = self.rect.center
                 self.image = self.piscando_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
+
+# Classe que representa contato da Peach com espinho
+class GameOver(pygame.sprite.Sprite):
+    # Construtor da classe.
+    def __init__(self, center, diminuindo_anim):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+ 
+        # Armazena a animação da morte
+        self.diminuindo_anim = diminuindo_anim
+ 
+        # Inicia o processo de animação colocando a primeira imagem na tela.
+        self.frame = 0  # Armazena o índice atual na animação
+        self.image = self.diminuindo_anim[self.frame]  # Pega a primeira imagem
+        self.rect = self.image.get_rect()
+        self.rect.center = center  # Posiciona o centro da imagem
+ 
+        # Guarda o tick da primeira imagem, ou seja, o momento em que a imagem foi mostrada
+        self.last_update = pygame.time.get_ticks()
+ 
+        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
+        # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
+        # próxima imagem da animação será mostrada
+        self.frame_ticks = 500
+ 
+    def update(self):
+        # Verifica o tick atual.
+        atual = pygame.time.get_ticks()
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+        elapsed_ticks = atual - self.last_update
+ 
+        # Se já está na hora de mudar de imagem...
+        if elapsed_ticks > self.frame_ticks:
+            # Marca o tick da nova imagem.
+            self.last_update = atual
+ 
+            # Avança um quadro.
+            self.frame += 1
+ 
+            # Verifica se já chegou no final da animação.
+            if self.frame == len(self.diminuindo_anim):
+                # Se sim, tchau diminuindi!
+                self.kill()
+            else:
+                # Se ainda não chegou ao fim da piscada, troca de imagem.
+                center = self.rect.center
+                self.image = self.diminuindo_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
 
@@ -412,6 +478,7 @@ def game_screen(window):
     ultimo_cogumelo = pygame.time.get_ticks()
     espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
+    comeco_jogo = pygame.time.get_ticks()
     trilha_sonora.play()
 
     while estado != FINAL:
@@ -472,6 +539,9 @@ def game_screen(window):
                 p = PlataformaMóvel(bloco_img, blocos)
                 todos_sprites.add(p)
                 blocos.add(p)
+
+            if atual - comeco_jogo > 1000000:
+                estado = FINAL
         
 
         #if atual - tela_jogo > 10000:
@@ -489,15 +559,26 @@ def game_screen(window):
                 todos_espinhos.add(e)  
 
             if len(dano) > 0:
-                som_dano.play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, piscando_anim)
-                todos_sprites.add(contato)
                 estado = MORRENDO
+                jogador.kill()
+                if vidas == 0:
+                    trilha_sonora.stop()
+                    som_morte.play()
+                    game_over = GameOver(jogador.rect.center, diminuindo_anim)
+                    todos_sprites.add(game_over)
+                else:
+                    estado = JOGANDO
+                    jogador = Peach(peach_img, linha, coluna, blocos)
+                    todos_sprites.add(jogador)
+                    som_dano.play()
+                    contato = Contato(jogador.rect.center, piscando_anim)
+                    todos_sprites.add(contato)
+                    piscando_tick = pygame.time.get_ticks()
+                    piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                piscando_tick = pygame.time.get_ticks()
-                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+               
 
             if len(ganhando_vida) > 0:
                 som_cogumelo.play()
@@ -508,29 +589,46 @@ def game_screen(window):
 
 
             if len(dano_gigante) > 0:
-                som_dano.play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, piscando_anim)
-                todos_sprites.add(contato)
                 estado = MORRENDO
-                keys_down = {}
-                piscando_tick = pygame.time.get_ticks()
-                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
-
-
-        elif estado == MORRENDO:
-            atual = pygame.time.get_ticks()
-            if atual - piscando_tick > piscando_duracao:
                 if vidas == 0:
                     trilha_sonora.stop()
                     som_morte.play()
-                    time.sleep(2.3)
-                    estado = FINAL 
+                    game_over = GameOver(jogador.rect.center, diminuindo_anim)
+                    todos_sprites.add(game_over)
                 else:
                     estado = JOGANDO
                     jogador = Peach(peach_img, linha, coluna, blocos)
                     todos_sprites.add(jogador)
+                    som_dano.play()
+                    contato = Contato(jogador.rect.center, piscando_anim)
+                    todos_sprites.add(contato)
+                    piscando_tick = pygame.time.get_ticks()
+                    piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+                keys_down = {}
+
+
+        elif estado == MORRENDO:
+            # atual = pygame.time.get_ticks()
+            # if atual - piscando_tick > piscando_duracao:
+            # jogador.kill()
+            # if vidas == 0:
+            #     trilha_sonora.stop()
+            #     som_morte.play()
+            #     game_over = GameOver(jogador.rect.center, diminuindo_anim)
+            #     todos_sprites.add(game_over)
+            #     keys_down = {}
+            #     piscando_tick = pygame.time.get_ticks()
+            #     piscando_duracao = game_over.frame_ticks * len(game_over.diminuindo_anim)
+            #     time.sleep(2.3)
+            #     estado = FINAL 
+            # else:
+            #     estado = JOGANDO
+            #     jogador = Peach(peach_img, linha, coluna, blocos)
+            #     todos_sprites.add(jogador)
+            if not game_over.alive():
+                estado = FINAL
 
 
         # ----- Gera saídas

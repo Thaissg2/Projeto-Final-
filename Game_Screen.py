@@ -3,6 +3,7 @@ from Configuracao import *
 from Assets import *
 from Sprites import *
 
+pygame.init()
 window = pygame.display.set_mode((LARGURA, ALTURA))
 
 def game_screen(window):
@@ -27,34 +28,34 @@ def game_screen(window):
     
     # Cria fundo do jogo
     fundo_rect = assets[FUNDO].get_rect()
-
+    
     # Cria blocos de acordo com o mapa
     for linha in range(len(MAPA)):
         for coluna in range(len(MAPA[linha])):
             tipo_bloco = MAPA[linha][coluna]
             if tipo_bloco == BLOCO:
-                tile = Blocos(assets[BLOCO_IMG], grupos)
+                tile = Blocos(grupos, assets, linha, coluna)
                 todos_sprites.add(tile)
                 blocos.add(tile)
                 
     # Cria o jogador
-    jogador = Peach(assets[PEACH_IMG], 14, 0, grupos)
+    jogador = Peach(grupos, assets, 14, 0)
     todos_sprites.add(jogador)
     
     # Cria os espinhos
     for i in range(4):
-        espinho= Espinho(assets[ESPINHO_IMG], grupos)
+        espinho= Espinho(assets, grupos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
         
     # Cria os cogumelos
     for i in range(1):
-        cogumelo = Cogumelo(assets[COGUMELO_IMG], blocos)
+        cogumelo = Cogumelo(assets, grupos)
         todos_sprites.add(cogumelo)
         todos_cogumelos.add(cogumelo)
 
     # Cria a plataforma
-    plataforma = Plataforma(assets[PLATAFORMA_IMG])
+    plataforma = Plataforma(assets)
     blocos.add(plataforma)
 
     # Cria os estados do jogo
@@ -125,7 +126,7 @@ def game_screen(window):
             # Recria o cogumelo após 60 segundos
             if atual - espinho_gigante > 60000:
                 espinho_gigante = atual
-                g = EspinhoGigante(assets[ESPINHO_GIGANTE_IMG], blocos)
+                g = EspinhoGigante(assets, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
@@ -148,7 +149,7 @@ def game_screen(window):
 
             # O espinho é destruido e precisa ser recriado
             for esp in dano:
-                e = Espinho(assets[ESPINHO_IMG], blocos)
+                e = Espinho(assets, grupos)
                 todos_sprites.add(e)
                 todos_espinhos.add(e)  
     
@@ -157,7 +158,7 @@ def game_screen(window):
                 assets[SOM_DANO].play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, assets[PISCANDO_ANIM])
+                contato = Contato(jogador.rect.center, assets)
                 todos_sprites.add(contato)
                 estado = MORRENDO
                 keys_down = {}
@@ -174,7 +175,7 @@ def game_screen(window):
                 assets[SOM_DANO].play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, assets[PISCANDO_ANIM])
+                contato = Contato(jogador.rect.center, assets)
                 todos_sprites.add(contato)
                 estado = MORRENDO
                 keys_down = {}
@@ -195,7 +196,7 @@ def game_screen(window):
                     estado = FINAL 
                 else:
                     estado = JOGANDO
-                    jogador = Peach(assets[PEACH_IMG], linha, coluna, blocos)
+                    jogador = Peach(grupos, assets, linha, coluna)
                     todos_sprites.add(jogador)
 
         # ----- Gera saídas

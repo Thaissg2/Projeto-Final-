@@ -6,7 +6,7 @@ from Assets import *
 
 # Classe dos blocos
 class Blocos(pygame.sprite.Sprite):
-    def __init__(self, grupos, assets):
+    def __init__(self, grupos, assets, linha, coluna):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do bloco.
         self.image = assets[BLOCO_IMG]
@@ -15,12 +15,12 @@ class Blocos(pygame.sprite.Sprite):
         # Posiciona o bloco
         self.rect.x = BLOCO_TAMANHO * coluna
         self.rect.y = BLOCO_TAMANHO * linha
-        self.grupos = blocos
+        self.grupos = grupos
         self.assets = assets
 
 # Classe do jogador
 class Peach(pygame.sprite.Sprite):
-    def __init__(self, grupos, assets):
+    def __init__(self, grupos, assets, linha, coluna):
         pygame.sprite.Sprite.__init__(self)
         # Define o estado atual do jogador
         self.state = PARADO
@@ -30,7 +30,8 @@ class Peach(pygame.sprite.Sprite):
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
         # Guarda o grupo de blocos
-        self.grupos = blocos
+        self.grupos = grupos
+        self.blocos = grupos['blocos']
         # Posiciona o personagem
         self.rect.x = coluna * BLOCO_TAMANHO
         self.rect.centerx = LARGURA/2
@@ -47,7 +48,7 @@ class Peach(pygame.sprite.Sprite):
         # Atualiza posição y
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior
-        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do jogador para antes da colisão
         for colisão in colisões:
             if self.velocidadey > 0:
@@ -70,7 +71,7 @@ class Peach(pygame.sprite.Sprite):
         elif self.rect.right > LARGURA:
             self.rect.right = LARGURA - 1
         # Se colidiu com algum bloco, volta para o ponto anterior
-        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do jogador para antes da colisão
         for colisão in colisões:
             if self.velocidadex > 0:
@@ -98,10 +99,11 @@ class Espinho(pygame.sprite.Sprite):
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
-        self.grupos = blocos
+        self.grupos = grupos
         self.assets = assets
+        self.blocos = self.grupos['blocos']
 
-    def update(self, assets, grupos):
+    def update(self):
         # Atualizando a posição do espinho
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
@@ -111,10 +113,10 @@ class Espinho(pygame.sprite.Sprite):
             ESPINHO_ALTURA = random.randint(50,130)
             ESPINHO_LARGURA = ESPINHO_ALTURA
             # Recarrega as imagens com o novo tamanho
-            assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
-            assets[ESPINHO_IMG] = pygame.transform.scale(assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
+            self.assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
+            self.assets[ESPINHO_IMG] = pygame.transform.scale(self.assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
             # Define a imagem do espinho
-            self.image = assets[ESPINHO_IMG]
+            self.image = self.assets[ESPINHO_IMG]
             self.mask = pygame.mask.from_surface(self.image)
             # Posiciona o espinho no jogo
             self.rect = self.image.get_rect()
@@ -123,10 +125,8 @@ class Espinho(pygame.sprite.Sprite):
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
-            self.grupos = blocos
-            self.assets = assets
         # Se colidiu com algum bloco, volta para o ponto anterior
-        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0
@@ -146,7 +146,8 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 5
         # Guarda o grupos de blocos
-        self.grupos = blocos
+        self.grupos = grupos
+        self.blocos = grupos['blocos']
         self.assets = assets
 
     def update(self):
@@ -154,7 +155,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior
-        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0 
@@ -176,7 +177,7 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 2
         # Guarda o grupo de blocos
-        self.grupos = blocos
+        self.grupos = grupos
         self.assets = assets
         
     def update(self):
@@ -239,7 +240,8 @@ class Cogumelo(pygame.sprite.Sprite):
         self.rect.y = random.randint(-100, -COGUMELO_ALTURA)
         self.velocidadex = 0
         self.velocidadey = 6
-        self.grupos = blocos
+        self.grupos = grupos
+        self.blocos = grupos['blocos']
         self.assets = assets
 
     def update(self):
@@ -247,7 +249,7 @@ class Cogumelo(pygame.sprite.Sprite):
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior
-        colisões = pygame.sprite.spritecollide(self, self.blocks, False)
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
             self.velocidadey = 0 
