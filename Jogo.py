@@ -229,12 +229,17 @@ class Espinho(pygame.sprite.Sprite):
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
+        #for colisão in colisões:
+            #if self.velocidadex > 0:
+                #self.rect.right = colisão.rect.left
+            #elif self.velocidadex < 0:
+                #self.rect.left = colisão.rect.right
         for colisão in colisões:
-            if self.velocidadex > 0:
-                self.rect.right = colisão.rect.left
-            elif self.velocidadex < 0:
-                self.rect.left = colisão.rect.right
-
+            self.velocidadey = 0 
+        elif self.velocidadex == 0:
+            self.velocidadex = 5
+        else:
+            self.velocidadey = 8
 # Costruindo classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
     def __init__(self, espinho_gigante_img, blocos):
@@ -567,11 +572,11 @@ def game_screen(window):
                     todos_sprites.add(game_over)
                 else:
                     estado = JOGANDO
+                    contato = Contato(jogador.rect.center, piscando_anim)
+                    todos_sprites.add(contato)
                     jogador = Peach(peach_img, linha, coluna, blocos)
                     todos_sprites.add(jogador)
                     som_dano.play()
-                    contato = Contato(jogador.rect.center, piscando_anim)
-                    todos_sprites.add(contato)
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
@@ -597,14 +602,15 @@ def game_screen(window):
                     todos_sprites.add(game_over)
                 else:
                     estado = JOGANDO
+                    contato = Contato(jogador.rect.center, piscando_anim)
+                    todos_sprites.add(contato)
                     jogador = Peach(peach_img, linha, coluna, blocos)
                     todos_sprites.add(jogador)
                     som_dano.play()
-                    contato = Contato(jogador.rect.center, piscando_anim)
-                    todos_sprites.add(contato)
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
+                print(contato)
 
 
         elif estado == PERDENDO_VIDAS:
