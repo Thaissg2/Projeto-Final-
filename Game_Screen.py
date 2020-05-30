@@ -62,6 +62,7 @@ def game_screen(window):
     FINAL = 0
     JOGANDO = 1
     MORRENDO = 2
+    PERDENDO_VIDAS = 3
     estado = JOGANDO
 
     # Cria as vidas do jogador
@@ -69,10 +70,11 @@ def game_screen(window):
     keys_down = {}
 
     # ===== Loop principal =====
-    #tela_jogo = pygame.time.get_ticks()
     ultimo_cogumelo = pygame.time.get_ticks()
     espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
+    comeco_jogo = pygame.time.get_ticks()
+
     assets[TRILHA_SONORA].play()
 
     while estado != FINAL:
@@ -125,23 +127,24 @@ def game_screen(window):
 
             # Recria o cogumelo após 60 segundos
             if atual - espinho_gigante > 60000:
+                assets[SOM_ESPINHO_GIGANTE].play()
                 espinho_gigante = atual
                 g = EspinhoGigante(assets, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após ALGUM TEMPO --> ATENÇÃO
-            if atual - ultima_plataforma > 10000:
+            if atual - ultima_plataforma > 60000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets[BLOCO_IMG], blocos)
                 todos_sprites.add(p)
                 blocos.add(p)
-        
 
-        #if atual - tela_jogo > 10000:
-            #estado = MORRENDO
+            # Determina um tempo máximo de jogo
+            if atual - comeco_jogo > 1000000:
+                estado = FINAL #Mudar para ganhando quando colocarmos a tela de vencedor
 
-        # Indica as colisões do jogador com cogumelos e espinhos
+            # Indica as colisões do jogador com cogumelos e espinhos
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
@@ -155,15 +158,23 @@ def game_screen(window):
     
             # Se o jogador encostou no espinho
             if len(dano) > 0:
-                assets[SOM_DANO].play()
-                jogador.kill()
+                jogador.kill
                 vidas -= 1
-                contato = Contato(jogador.rect.center, assets)
-                todos_sprites.add(contato)
-                estado = MORRENDO
+                estado = PERDENDO_VIDAS
+                if vidas == 0:
+                    estado = MORRENDO
+                    assets[TRILHA_SONORA].stop()
+                    assets[SOM_MORTE].play
+                    game_over = GameOver(jogador.rect.center, assets)
+                    todos_sprites.add(game_over)
+                else:
+                    assets[SOM_DANO].play
+                    contato = Contato(jogador.rect.center, assets)
+                    todos_sprites.add(contato)
+                    piscando_tick = pygame.time.get_ticks()
+                    piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                piscando_tick = pygame.time.get_ticks()
-                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+                print(contato)
 
             # Se o jogador encostou no cogumelo
             if len(ganhando_vida) > 0:
@@ -172,43 +183,49 @@ def game_screen(window):
 
             # Se o jogador encosta no espinho gigante
             if len(dano_gigante) > 0:
-                assets[SOM_DANO].play()
                 jogador.kill()
                 vidas -= 1
-                contato = Contato(jogador.rect.center, assets)
-                todos_sprites.add(contato)
-                estado = MORRENDO
+                estado = PERDENDO_VIDAS
+                if vidas == 0:
+                    estado = MORRENDO
+                    assets[TRILHA_SONORA].stop
+                    assets[SOM_DANO].play()
+                    game_over = GameOver(jogador.rect.center, assets)
+                    todos_sprites.add(game_over)
+                else:
+                    assets[SOM_DANO].play
+                    contato = Contato(jogador.rect.center, assets)
+                    todos_sprites.add(contato)
+                    piscando_tick = pygame.time.get_ticks()
+                    piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                piscando_tick = pygame.time.get_ticks()
-                piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
+                print(contato)
                 
-            #if len(pisando) > 0:
-            #    self.velocidadey = 0
-            
+
         # Se o jogador perdeu uma vida
         elif estado == MORRENDO:
-            atual = pygame.time.get_ticks()
-            if atual - piscando_tick > piscando_duracao:
-                if vidas == 0:
-                    assets[TRILHA_SONORA].stop()
-                    assets[SOM_MORTE].play()
-                    time.sleep(2.3)
-                    estado = FINAL 
-                else:
-                    estado = JOGANDO
+            if not game_over.alive():
+                estado = FINAL
+            elif estado == PERDENDO_VIDAS:
+                if not contato.alive():
                     jogador = Peach(grupos, assets, linha, coluna)
                     todos_sprites.add(jogador)
+                    estado = JOGANDO
+            elif estado == PERDENDO_VIDAS:
+                if not game_over.alive():
+                    estado = FINAL
 
-        # ----- Gera saídas
-        window.fill((0, 0, 0))
-        
-        # Fazendo o fundo se mover: a parte de cima deve ser continuação da parte de baixo
-        window.blit(assets[FUNDO], fundo_rect)
-        # Desenha o fundo com cópia pra cima
-        fundo_rect2 = fundo_rect.copy()
-        if fundo_rect.top > 0:
-            fundo_rect2.y -= fundo_rect2.height
-        window.blit(assets[FUNDO], fundo_rect2)
+            #atual = pygame.time.get_ticks()
+            #if atual - piscando_tick > piscando_duracao:
+            #    if vidas == 0:
+            #        assets[TRILHA_SONORA].stop()
+            #        assets[SOM_MORTE].play()
+            #        time.sleep(2.3)
+            #        estado = FINAL 
+            #    else:
+            #        estado = JOGANDO
+            #        jogador = Peach(grupos, assets, linha, coluna)
+            #        todos_sprites.add(jogador)
         
         # Desenha os sprites
         todos_sprites.draw(window)

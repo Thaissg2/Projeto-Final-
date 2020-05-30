@@ -99,8 +99,8 @@ class Espinho(pygame.sprite.Sprite):
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
-        self.grupos = grupos
         self.assets = assets
+        self.grupos = grupos
         self.blocos = self.grupos['blocos']
 
     def update(self):
@@ -146,10 +146,10 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 5
         # Guarda o grupos de blocos
-        self.grupos = grupos
         self.blocos = grupos['blocos']
+        self.grupos = grupos
         self.assets = assets
-
+        
     def update(self):
         # Atualizando a posição do espinho gigante
         self.rect.x += self.velocidadex
@@ -164,10 +164,9 @@ class EspinhoGigante(pygame.sprite.Sprite):
 
 # Classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
-    def __init__(self, assets, grupos):
+    def __init__(self, grupos, assets):
         pygame.sprite.Sprite.__init__(self)
-        # Define a imagem da classe
-        self.image = assets[BLOCO_IMG]
+        # Define a i
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhes sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -178,6 +177,7 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         self.velocidadey = 2
         # Guarda o grupo de blocos
         self.grupos = grupos
+        self.blocos = grupos['blocos']
         self.assets = assets
         
     def update(self):
@@ -225,6 +225,49 @@ class Contato(pygame.sprite.Sprite):
                 self.image = self.piscando_anim[self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
+
+# Classe que representa contato da Peach com espinho
+class GameOver(pygame.sprite.Sprite):
+    # Construtor da classe.
+    def __init__(self, center, assets):
+        # Construtor da classe mãe (Sprite).
+        pygame.sprite.Sprite.__init__(self)
+        # Armazena a animação da morte
+        self.diminuindo_anim = assets[DIMINUIDO_ANIM]
+        # Inicia o processo de animação colocando a primeira imagem na tela.
+        self.frame = 0  # Armazena o índice atual na animação
+        self.image = self.diminuindo_anim[self.frame]  # Pega a primeira imagem
+        self.rect = self.image.get_rect()
+        self.rect.center = center  # Posiciona o centro da imagem
+        # Guarda o tick da primeira imagem, ou seja, o momento em que a imagem foi mostrada
+        self.last_update = pygame.time.get_ticks()
+        # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
+        # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
+        # próxima imagem da animação será mostrada
+        self.frame_ticks = 101
+
+        def update(self):
+        # Verifica o tick atual.
+            atual = pygame.time.get_ticks()
+            # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+            elapsed_ticks = atual - self.last_update
+            # Se já está na hora de mudar de imagem...
+            if elapsed_ticks > self.frame_ticks:
+                # Marca o tick da nova imagem.
+                self.last_update = atual
+                # Avança um quadro.
+                self.frame += 1
+                # Verifica se já chegou no final da animação.
+                if self.frame == len(self.diminuindo_anim):
+                    # Se sim, tchau diminuindi!
+                    self.kill()
+                else:
+                    # Se ainda não chegou ao fim da piscada, troca de imagem.
+                    center = self.rect.center
+                    self.image = self.diminuindo_anim[self.frame]
+                    self.rect = self.image.get_rect()
+                    self.rect.center = center
+    
 
 # Classe do Cogumelo
 class Cogumelo(pygame.sprite.Sprite):

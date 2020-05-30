@@ -30,18 +30,25 @@ GIGANTE_ALTURA = 200
 GIGANTE_LARGURA = 200
 
 font = pygame.font.SysFont(None, 48)
+
 fundo = pygame.image.load('assets/fundo2.jpg').convert_alpha()
 fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
+
 espinho_img = pygame.image.load('assets/espinho2.png').convert_alpha()
 espinho_img = pygame.transform.scale(espinho_img, (ESPINHO_LARGURA, ESPINHO_ALTURA))
+
 plataforma_img = pygame.image.load('assets/plataforma.png').convert_alpha()
 plataforma_img = pygame.transform.scale(plataforma_img, (PLATAFORMA_LARGURA, PLATAFORMA_ALTURA))
+
 peach_img = pygame.image.load('assets/Peach2.png').convert_alpha()
 peach_img= pygame.transform.scale(peach_img, (PEACH_LARGURA, PEACH_ALTURA))
+
 bloco_img =  pygame.image.load('assets/plataforma_movel.png').convert_alpha()
 bloco_img = pygame.transform.scale(bloco_img, (150, BLOCO_TAMANHO))
+
 cogumelo_img = pygame.image.load('assets/cogumelo.png').convert_alpha()
 cogumelo_img = pygame.transform.scale(cogumelo_img, (COGUMELO_LARGURA, COGUMELO_ALTURA))
+
 espinho_gigante_img = pygame.image.load('assets/espinho2.png').convert_alpha()
 espinho_gigante_img = pygame.transform.scale(espinho_gigante_img, (GIGANTE_LARGURA, GIGANTE_ALTURA))
 
@@ -58,7 +65,6 @@ for i in range(0,8):
 
 
 lista_animacao =  [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-
 for i in lista_animacao:
      # Definindo animação da morte'
       img2 = pygame.image.load('assets/Peach2.png').convert_alpha()
@@ -70,6 +76,7 @@ trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
 som_morte = pygame.mixer.Sound('assets/morte.wav')
 som_cogumelo = pygame.mixer.Sound('assets/som_cogumelo.wav')
 som_dano = pygame.mixer.Sound('assets/som_dano.wav')
+som_espinho_gigante = pygame.mixer.Sound('assets/Boss_fight2.wav')
 
 # Define a aceleração da gravidade
 GRAVIDADE = 5
@@ -166,7 +173,7 @@ class Peach(pygame.sprite.Sprite):
                 self.state = PARADO
             elif self.velocidadey < 0:
                 self.rect.top = colisão.rect.top
-                # Se colidiu com algo para de cair
+                # Se colnidiu com algo para de cair
                 self.velocidadey = 0
                 # Atualiza a posição para parado
                 self.state = PARADO
@@ -206,7 +213,6 @@ class Espinho(pygame.sprite.Sprite):
         self.velocidadey = 6
         self.blocks = blocos
 
-
     def update(self):
         # Atualizando a posição do espinho
         self.rect.x += self.velocidadex
@@ -229,17 +235,12 @@ class Espinho(pygame.sprite.Sprite):
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
-        #for colisão in colisões:
-            #if self.velocidadex > 0:
-                #self.rect.right = colisão.rect.left
-            #elif self.velocidadex < 0:
-                #self.rect.left = colisão.rect.right
         for colisão in colisões:
-            self.velocidadey = 0 
-        elif self.velocidadex == 0:
-            self.velocidadex = 5
-        else:
-            self.velocidadey = 8
+            if self.velocidadex > 0:
+                self.rect.right = colisão.rect.left
+            elif self.velocidadex < 0:
+                self.rect.left = colisão.rect.right
+
 # Costruindo classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
     def __init__(self, espinho_gigante_img, blocos):
@@ -253,7 +254,6 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 5
         self.blocks = blocos
-
 
     def update(self):
         # Atualizando a posição do espinho gigante
@@ -281,7 +281,6 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 2
         self.blocks = blocos
-
 
     def update(self):
         # Atualizando a posição da plataforma móvel
@@ -401,7 +400,6 @@ class Cogumelo(pygame.sprite.Sprite):
         self.velocidadey = 6
         self.blocks = blocos
 
-
     def update(self):
         # Atualizando a posição do cogumelo
         self.rect.x += self.velocidadex
@@ -469,7 +467,7 @@ def game_screen(window):
     JOGANDO = 1 #Estado enquanto a personagem tem vidas
     MORRENDO = 2 #Estado quando a personagem não tem mais vidas ()
     PERDENDO_VIDAS = 3 #Estado quando a personagem perde uma vida
-    GANHANDO = 4 #Estado quando acabou o tempo e o jogador não perdeu
+    #GANHANDO = 4 #Estado quando acabou o tempo e o jogador não perdeu
 
     estado = JOGANDO
 
@@ -478,7 +476,6 @@ def game_screen(window):
     keys_down = {}
 
     # ===== Loop principal =====
-    #tela_jogo = pygame.time.get_ticks()
     ultimo_cogumelo = pygame.time.get_ticks()
     espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
@@ -533,12 +530,15 @@ def game_screen(window):
                 todos_cogumelos.add(c)      
 
             if atual - espinho_gigante > 60000:
+                trilha_sonora.stop()
+                som_espinho_gigante.play()
                 espinho_gigante = atual
                 g = EspinhoGigante(espinho_gigante_img, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
+    
 
-            if atual - ultima_plataforma > 10000:
+            if atual - ultima_plataforma > 60000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(bloco_img, blocos)
                 todos_sprites.add(p)
@@ -546,7 +546,6 @@ def game_screen(window):
 
             if atual - comeco_jogo > 1000000:
                 estado = FINAL
-
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
@@ -563,7 +562,6 @@ def game_screen(window):
                 jogador.kill()
                 vidas -= 1
                 estado = PERDENDO_VIDAS
-                jogador.kill()
                 if vidas == 0:
                     estado = MORRENDO
                     trilha_sonora.stop()
@@ -571,24 +569,17 @@ def game_screen(window):
                     game_over = GameOver(jogador.rect.center, diminuindo_anim)
                     todos_sprites.add(game_over)
                 else:
-                    estado = JOGANDO
                     contato = Contato(jogador.rect.center, piscando_anim)
                     todos_sprites.add(contato)
-                    jogador = Peach(peach_img, linha, coluna, blocos)
-                    todos_sprites.add(jogador)
                     som_dano.play()
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-               
+                print(contato)
 
             if len(ganhando_vida) > 0:
                 som_cogumelo.play()
                 vidas += 1
-
-            #if len(pisando) > 0:
-                #self.velocidadey = 0
-
 
             if len(dano_gigante) > 0:
                 jogador.kill()
@@ -601,22 +592,25 @@ def game_screen(window):
                     game_over = GameOver(jogador.rect.center, diminuindo_anim)
                     todos_sprites.add(game_over)
                 else:
-                    estado = JOGANDO
                     contato = Contato(jogador.rect.center, piscando_anim)
                     todos_sprites.add(contato)
-                    jogador = Peach(peach_img, linha, coluna, blocos)
-                    todos_sprites.add(jogador)
                     som_dano.play()
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
                 print(contato)
 
-
+        elif estado == MORRENDO:
+            if not game_over.alive():
+                estado = FINAL
+        elif estado == PERDENDO_VIDAS:
+            if not contato.alive():
+                jogador = Peach(peach_img, linha, coluna, blocos)
+                todos_sprites.add(jogador)
+                estado = JOGANDO
         elif estado == PERDENDO_VIDAS:
             if not game_over.alive():
                 estado = FINAL
-
 
         # ----- Gera saídas
         window.fill((0, 0, 0))  # Preenche com a cor branca
