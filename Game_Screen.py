@@ -58,7 +58,7 @@ def game_screen(window):
     plataforma = Plataforma(assets)
     blocos.add(plataforma)
 
-    # Cria os estados do jogo
+    # Cria os estados do personagem
     FINAL = 0
     JOGANDO = 1
     MORRENDO = 2
@@ -226,7 +226,7 @@ def game_screen(window):
             #        estado = JOGANDO
             #        jogador = Peach(grupos, assets, linha, coluna)
             #        todos_sprites.add(jogador)
-        
+         
         # Desenha os sprites
         todos_sprites.draw(window)
         window.blit(plataforma.image, plataforma.rect)

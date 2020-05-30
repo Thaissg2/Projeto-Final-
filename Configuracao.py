@@ -28,7 +28,9 @@ GIGANTE_LARGURA = 200
 INICIO = 0
 JOGO = 1
 QUIT = 2
-END = 3
+LOSE = 3
+WIN = 4
+
 
 # Estados do jogador
 PARADO = 0

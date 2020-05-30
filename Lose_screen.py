@@ -4,13 +4,13 @@ import os
 from Configuracao import *
 from Assets import *
 
-def init_screen(screen):
+def end_screen(screen):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
     assets = load_assets()
 
     # Carrega o fundo da tela inicial
-    fundo = assets[INIT_FUNDO]
+    fundo = assets[GAMEOVER_FUNDO]
     fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
     fundo_rect = fundo.get_rect()
 
@@ -28,7 +28,7 @@ def init_screen(screen):
                 running = False
 
             if event.type == pygame.KEYUP:
-                estado = JOGO
+                estado = LOSE
                 running = False
 
         # A cada loop, redesenha o fundo
