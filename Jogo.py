@@ -130,6 +130,7 @@ class Blocos(pygame.sprite.Sprite):
         # Posiciona o tile
         self.rect.x = BLOCO_TAMANHO * coluna
         self.rect.y = BLOCO_TAMANHO * linha 
+        self.velocidadey = 0
 
 # ----- Inicia estruturas de dados
 # Definindo os novos tipos
@@ -236,10 +237,13 @@ class Espinho(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            if self.velocidadex > 0:
-                self.rect.right = colisão.rect.left
-            elif self.velocidadex < 0:
-                self.rect.left = colisão.rect.right
+            self.velocidadey = colisão.velocidadey
+            # if self.velocidadex > 0:
+            #     self.rect.right = colisão.rect.left
+            # elif self.velocidadex < 0:
+            #     self.rect.left = colisão.rect.right
+        if len(colisões) == 0:
+            self.velocidadey = 8
 
 # Costruindo classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
@@ -409,9 +413,11 @@ class Cogumelo(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0 
+            self.velocidadey = colisão.velocidadey
             if self.velocidadex == 0:
                 self.velocidadex = random.choice([-5,-4, 4, 5])
+        if len(colisões) == 0:
+            self.velocidadey = 6
 
 
 # Classe que representa a plataforma
@@ -422,6 +428,7 @@ class Plataforma(pygame.sprite.Sprite):
         self.image = img
         self.rect = self.image.get_rect()
         self.rect.bottom = ALTURA
+        self.velocidadey = 0
 
 def game_screen(window):
     clock = pygame.time.Clock()
@@ -477,7 +484,7 @@ def game_screen(window):
 
     # ===== Loop principal =====
     ultimo_cogumelo = pygame.time.get_ticks()
-    espinho_gigante = pygame.time.get_ticks()
+    ultimo_espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
     comeco_jogo = pygame.time.get_ticks()
     trilha_sonora.play()
@@ -529,10 +536,10 @@ def game_screen(window):
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
-            if atual - espinho_gigante > 60000:
+            if atual - ultimo_espinho_gigante > 60000:
                 trilha_sonora.stop()
                 som_espinho_gigante.play()
-                espinho_gigante = atual
+                ultimo_espinho_gigante = atual
                 g = EspinhoGigante(espinho_gigante_img, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
@@ -544,13 +551,13 @@ def game_screen(window):
                 todos_sprites.add(p)
                 blocos.add(p)
 
-            if atual - comeco_jogo > 1000000:
+            if atual - comeco_jogo > 10000:
                 estado = FINAL
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
-            pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
+            #pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
 
             for esp in dano:
             # O espinho é destruido e precisa ser recriado
@@ -583,6 +590,9 @@ def game_screen(window):
 
             if len(dano_gigante) > 0:
                 jogador.kill()
+                if len(todos_espinhos_gigantes) == 0:
+                    som_espinho_gigante.stop()
+                    trilha_sonora.play()
                 vidas -= 1
                 estado = PERDENDO_VIDAS
                 if vidas == 0:
@@ -599,6 +609,14 @@ def game_screen(window):
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
                 print(contato)
+            
+            for espinho_gigante in todos_espinhos_gigantes:
+                # Verifica se saiu da tela
+                if espinho_gigante.rect.right < 0 or espinho_gigante.rect.left > LARGURA:
+                    espinho_gigante.kill()
+                    if len(todos_espinhos_gigantes) == 0:
+                        som_espinho_gigante.stop()
+                        trilha_sonora.play()
 
         elif estado == MORRENDO:
             if not game_over.alive():

@@ -214,18 +214,6 @@ def game_screen(window):
             elif estado == PERDENDO_VIDAS:
                 if not game_over.alive():
                     estado = FINAL
-
-            #atual = pygame.time.get_ticks()
-            #if atual - piscando_tick > piscando_duracao:
-            #    if vidas == 0:
-            #        assets[TRILHA_SONORA].stop()
-            #        assets[SOM_MORTE].play()
-            #        time.sleep(2.3)
-            #        estado = FINAL 
-            #    else:
-            #        estado = JOGANDO
-            #        jogador = Peach(grupos, assets, linha, coluna)
-            #        todos_sprites.add(jogador)
         
         # Desenha os sprites
         todos_sprites.draw(window)
