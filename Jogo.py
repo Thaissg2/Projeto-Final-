@@ -551,7 +551,7 @@ def game_screen(window):
                 todos_sprites.add(p)
                 blocos.add(p)
 
-            if atual - comeco_jogo > 10000:
+            if atual - comeco_jogo > 100000:
                 estado = FINAL
 
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
