@@ -4,6 +4,7 @@ from Configuracao import *
 
 FUNDO = 'fundo'
 INIT_FUNDO = 'init_fundo'
+GAMEOVER_FUNDO = 'gameover_fundo'
 ESPINHO_IMG = 'espinho_img'
 PLATAFORMA_IMG = 'plataforma_img'
 PEACH_IMG = 'peach_img'
@@ -31,6 +32,9 @@ def load_assets():
 
     assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpg')).convert()
     assets[INIT_FUNDO] = pygame.transform.scale(assets['init_fundo'], (LARGURA, ALTURA))
+
+    assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_perdeu.jpg')).convert()
+    assets[GAMEOVER_FUNDO] = pygame.transform.scale(assets['gameover_fundo'], (LARGURA, ALTURA))
 
     assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
     assets[ESPINHO_IMG] = pygame.transform.scale(assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
