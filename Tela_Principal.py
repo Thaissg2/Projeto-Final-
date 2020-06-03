@@ -17,7 +17,7 @@ while estado != QUIT:
         estado = init_screen(window)
     elif estado == JOGO:
         estado = game_screen(window)
-    #elif state == END:
+    #elif state == LOSE:
     #    estado = end_screen(window)
     else:
         estado = QUIT

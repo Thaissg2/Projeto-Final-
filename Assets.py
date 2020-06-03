@@ -33,7 +33,7 @@ def load_assets():
     assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpg')).convert()
     assets[INIT_FUNDO] = pygame.transform.scale(assets['init_fundo'], (LARGURA, ALTURA))
 
-    assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_perdeu.jpg')).convert()
+    assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_perdeu.jpeg')).convert()
     assets[GAMEOVER_FUNDO] = pygame.transform.scale(assets['gameover_fundo'], (LARGURA, ALTURA))
 
     assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()

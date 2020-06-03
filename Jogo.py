@@ -557,8 +557,7 @@ def game_screen(window):
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
-            #pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
-
+            
             for esp in dano:
             # O espinho é destruido e precisa ser recriado
                 e = Espinho(espinho_img, blocos)
@@ -626,9 +625,6 @@ def game_screen(window):
                 jogador = Peach(peach_img, linha, coluna, blocos)
                 todos_sprites.add(jogador)
                 estado = JOGANDO
-        elif estado == PERDENDO_VIDAS:
-            if not game_over.alive():
-                estado = FINAL
 
         # ----- Gera saídas
         window.fill((0, 0, 0))  # Preenche com a cor branca
@@ -645,7 +641,6 @@ def game_screen(window):
         # Desenhando espinhos
         todos_sprites.draw(window)
         window.blit(plataforma.image, plataforma.rect)
-        #window.blit(peach.image, peach.rect)
 
         # Desenhando as vidas
         text_surface = coracao.render(chr(9829) * vidas, True, (255, 0, 0))

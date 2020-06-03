@@ -32,9 +32,9 @@ def end_screen(screen):
                 running = False
 
         # A cada loop, redesenha o fundo
-        screen.blit(fundo, fundo_rect)
+        screen.blit(assets[FUNDO], fundo_rect)
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
 
-    return estado
+    return FINAL

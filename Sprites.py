@@ -78,8 +78,7 @@ class Peach(pygame.sprite.Sprite):
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
                 self.rect.left = colisão.rect.right
-    
-    # Definindo o pulo do jogador
+
     def jump (self):
         if self.state == PARADO:
             self.velocidadey -= PULO
@@ -129,7 +128,9 @@ class Espinho(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0
+            self.velocidadey = colisão.velocidadey
+        if len(colisões) == 0:
+            self.velocidadey = 8
 
 # Classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
@@ -204,27 +205,27 @@ class Contato(pygame.sprite.Sprite):
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos
         self.frame_ticks = 50
         
-        def update(self):
-            # Verifica o tick atual.
-            atual = pygame.time.get_ticks()
-            # Verifica quantos ticks se passaram desde a ultima mudança de frame.
-            elapsed_ticks = atual - self.last_update
-            # Se já está na hora de mudar de imagem...
-            if elapsed_ticks > self.frame_ticks:
-                # Marca o tick da nova imagem.
-                self.last_update = atual
-                # Avança um quadro.
-                self.frame += 1
-                # Verifica se já chegou no final da animação.
-            if self.frame == len(self.piscando_anim):
-                # Se sim, tchau piscando!
-                self.kill()
-            else:
-                # Se ainda não chegou ao fim da piscada, troca de imagem.
-                center = self.rect.center
-                self.image = self.piscando_anim[self.frame]
-                self.rect = self.image.get_rect()
-                self.rect.center = center
+    def update(self):
+        # Verifica o tick atual.
+        atual = pygame.time.get_ticks()
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+        elapsed_ticks = atual - self.last_update
+        # Se já está na hora de mudar de imagem...
+        if elapsed_ticks > self.frame_ticks:
+            # Marca o tick da nova imagem.
+            self.last_update = atual
+            # Avança um quadro.
+            self.frame += 1
+            # Verifica se já chegou no final da animação.
+        if self.frame == len(self.piscando_anim):
+            # Se sim, tchau piscando!
+            self.kill()
+        else:
+            # Se ainda não chegou ao fim da piscada, troca de imagem.
+            center = self.rect.center
+            self.image = self.piscando_anim[self.frame]
+            self.rect = self.image.get_rect()
+            self.rect.center = center
 
 # Classe que representa contato da Peach com espinho
 class GameOver(pygame.sprite.Sprite):
@@ -233,7 +234,7 @@ class GameOver(pygame.sprite.Sprite):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação da morte
-        self.diminuindo_anim = assets[DIMINUIDO_ANIM]
+        self.diminuindo_anim = assets[DIMINUINDO_ANIM]
         # Inicia o processo de animação colocando a primeira imagem na tela.
         self.frame = 0  # Armazena o índice atual na animação
         self.image = self.diminuindo_anim[self.frame]  # Pega a primeira imagem
@@ -246,27 +247,27 @@ class GameOver(pygame.sprite.Sprite):
         # próxima imagem da animação será mostrada
         self.frame_ticks = 101
 
-        def update(self):
-        # Verifica o tick atual.
-            atual = pygame.time.get_ticks()
-            # Verifica quantos ticks se passaram desde a ultima mudança de frame.
-            elapsed_ticks = atual - self.last_update
-            # Se já está na hora de mudar de imagem...
-            if elapsed_ticks > self.frame_ticks:
-                # Marca o tick da nova imagem.
-                self.last_update = atual
-                # Avança um quadro.
-                self.frame += 1
-                # Verifica se já chegou no final da animação.
-                if self.frame == len(self.diminuindo_anim):
-                    # Se sim, tchau diminuindi!
-                    self.kill()
-                else:
-                    # Se ainda não chegou ao fim da piscada, troca de imagem.
-                    center = self.rect.center
-                    self.image = self.diminuindo_anim[self.frame]
-                    self.rect = self.image.get_rect()
-                    self.rect.center = center
+    def update(self):
+    # Verifica o tick atual.
+        atual = pygame.time.get_ticks()
+        # Verifica quantos ticks se passaram desde a ultima mudança de frame.
+        elapsed_ticks = atual - self.last_update
+        # Se já está na hora de mudar de imagem...
+        if elapsed_ticks > self.frame_ticks:
+            # Marca o tick da nova imagem.
+            self.last_update = atual
+            # Avança um quadro.
+            self.frame += 1
+            # Verifica se já chegou no final da animação.
+            if self.frame == len(self.diminuindo_anim):
+                # Se sim, tchau diminuindi!
+                self.kill()
+            else:
+                # Se ainda não chegou ao fim da piscada, troca de imagem.
+                center = self.rect.center
+                self.image = self.diminuindo_anim[self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
     
 
 # Classe do Cogumelo

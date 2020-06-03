@@ -59,19 +59,19 @@ def game_screen(window):
     blocos.add(plataforma)
 
     # Cria os estados do personagem
-    FINAL = 0
-    JOGANDO = 1
-    MORRENDO = 2
-    PERDENDO_VIDAS = 3
-    estado = JOGANDO
+    FINAL = 0 #Estado para a tela fechar
+    JOGANDO = 1 #Estado enquanto a personagem tem vidas
+    MORRENDO = 2 #Estado quando a personagem não tem mais vidas ()
+    PERDENDO_VIDAS = 3 #Estado quando a personagem perde uma vida
+    #GANHANDO = 4 #Estado quando acabou o tempo e o jogador não perdeu
 
     # Cria as vidas do jogador
     vidas = 3
     keys_down = {}
-
+    estado = JOGANDO
     # ===== Loop principal =====
     ultimo_cogumelo = pygame.time.get_ticks()
-    espinho_gigante = pygame.time.get_ticks()
+    ultimo_espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
     comeco_jogo = pygame.time.get_ticks()
 
@@ -126,9 +126,9 @@ def game_screen(window):
                 todos_cogumelos.add(c)      
 
             # Recria o cogumelo após 60 segundos
-            if atual - espinho_gigante > 60000:
+            if atual - ultimo_espinho_gigante > 60000:
                 assets[SOM_ESPINHO_GIGANTE].play()
-                espinho_gigante = atual
+                ultimo_espinho_gigante = atual
                 g = EspinhoGigante(assets, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
@@ -148,7 +148,6 @@ def game_screen(window):
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
-            pisando = pygame.sprite.spritecollide(jogador, blocos, False,  pygame.sprite.collide_mask)
 
             # O espinho é destruido e precisa ser recriado
             for esp in dano:
@@ -184,6 +183,9 @@ def game_screen(window):
             # Se o jogador encosta no espinho gigante
             if len(dano_gigante) > 0:
                 jogador.kill()
+                if len(todos_espinhos_gigantes) == 0:
+                    assets[SOM_ESPINHO_GIGANTE].stop()
+                    assets[TRILHA_SONORA].play()
                 vidas -= 1
                 estado = PERDENDO_VIDAS
                 if vidas == 0:
@@ -201,32 +203,38 @@ def game_screen(window):
                 keys_down = {}
                 print(contato)
                 
+            for espinho_gigante in todos_espinhos_gigantes:
+                # Verifica se saiu da tela
+                if espinho_gigante.rect.right < 0 or espinho_gigante.rect.left > LARGURA:
+                    espinho_gigante.kill()
+                    if len(todos_espinhos_gigantes) == 0:
+                        som_espinho_gigante.stop()
+                        trilha_sonora.play()
+                
 
         # Se o jogador perdeu uma vida
         elif estado == MORRENDO:
             if not game_over.alive():
-                estado = FINAL
-            elif estado == PERDENDO_VIDAS:
-                if not contato.alive():
-                    jogador = Peach(grupos, assets, linha, coluna)
-                    todos_sprites.add(jogador)
-                    estado = JOGANDO
-            elif estado == PERDENDO_VIDAS:
-                if not game_over.alive():
-                    estado = FINAL
+                #estado = FINAL
+                return LOSE
+        elif estado == PERDENDO_VIDAS:
+            if not contato.alive():
+                jogador = Peach(grupos, assets, linha, coluna)
+                todos_sprites.add(jogador)
+                estado = JOGANDO
 
-            #atual = pygame.time.get_ticks()
-            #if atual - piscando_tick > piscando_duracao:
-            #    if vidas == 0:
-            #        assets[TRILHA_SONORA].stop()
-            #        assets[SOM_MORTE].play()
-            #        time.sleep(2.3)
-            #        estado = FINAL 
-            #    else:
-            #        estado = JOGANDO
-            #        jogador = Peach(grupos, assets, linha, coluna)
-            #        todos_sprites.add(jogador)
+        # Desenha os sprites
+        window.fill((0, 0, 0))  # Preenche com a cor branca
          
+        # Além disso, deve ser cíclica, ou seja, a parte de cima deve ser continuação da parte de baixo
+        window.blit(assets[FUNDO], fundo_rect)
+
+        # Desenha o fundo com cópia pra cima
+        fundo_rect2 = fundo_rect.copy()
+        if fundo_rect.top > 0:
+            fundo_rect2.y -= fundo_rect2.height
+        window.blit(assets[FUNDO], fundo_rect2)
+        
         # Desenha os sprites
         todos_sprites.draw(window)
         window.blit(plataforma.image, plataforma.rect)
@@ -238,7 +246,3 @@ def game_screen(window):
         window.blit(text_surface, text_rect)
         
         pygame.display.update()
-
-    return END
-
-game_screen(window)
