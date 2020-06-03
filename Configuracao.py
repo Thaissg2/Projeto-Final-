@@ -1,3 +1,4 @@
+# Importa as bibliotecas necessárias
 from os import path
 
 # Estabelece as pastas que contém figuras e sons
@@ -11,7 +12,7 @@ LARGURA = 880
 ALTURA = 600
 FPS = 30
 
-# Define tamanhos
+# Define tamanhos das imagens
 ESPINHO_LARGURA = 50
 ESPINHO_ALTURA = 50
 PLATAFORMA_LARGURA = LARGURA
@@ -24,15 +25,15 @@ COGUMELO_LARGURA = 35
 GIGANTE_ALTURA = 200
 GIGANTE_LARGURA = 200
 
-# Estados para controle do jogo
-INICIO = 0
-JOGO = 1
-QUIT = 2
-LOSE = 3
-WIN = 4
+# Define os estados para controle do jogo
+INICIO = 0 # Estado do jogo para tela de início
+JOGO = 1 # Estado do jogo quando o jogador ainda tem vidas
+QUIT = 2 # Estado do jogo quando o jogador fecha a janela
+LOSE = 3 # Estado do jogo quando o jogador perde todas as vidas
+WIN = 4 # Estado do jogo quando o jogador ganha (sobrevive após o tempo máximo)
 
 
-# Estados do jogador
+# Configura os estados do jogador para o pulo
 PARADO = 0
 PULANDO = 1
 CAINDO = 2
@@ -43,14 +44,14 @@ GRAVIDADE = 5
 # Velocidade inicial no pulo
 PULO = 45
 
-# Velocidade em x
+# Velocidade do jogador em x
 VELOCIDADE_X = 9
 
 #Tipos de blocos
 BLOCO = 0
 VAZIO = -1 
 
-# Velocidade do fundo
+# Velocidade do background
 VELOCIDADE_FUNDO = -2
 
 # Mapa do jogo

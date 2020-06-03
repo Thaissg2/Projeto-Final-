@@ -18,6 +18,8 @@ class Blocos(pygame.sprite.Sprite):
         self.grupos = grupos
         self.assets = assets
 
+        self.velocidadey = 0
+
 # Classe do jogador
 class Peach(pygame.sprite.Sprite):
     def __init__(self, grupos, assets, linha, coluna):
@@ -308,3 +310,4 @@ class Plataforma(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.bottom = ALTURA
         self.assets = assets
+        self.velocidadey = 0

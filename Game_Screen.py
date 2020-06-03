@@ -1,31 +1,34 @@
+# Importa as bibliotecas necessárias
 import pygame
+
+# Importa os arquivos do jogo
 from Configuracao import *
 from Assets import *
 from Sprites import *
 
-pygame.init()
-window = pygame.display.set_mode((LARGURA, ALTURA))
 
 def game_screen(window):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
-    
+
+    # Carrega os assets
     assets = load_assets()
 
-    # Cria os grupos
+    # Cria os grupos dos sprites
     todos_sprites = pygame.sprite.Group()
     todos_espinhos = pygame.sprite.Group()
     todos_cogumelos = pygame.sprite.Group()
     todos_espinhos_gigantes = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
-    
+
+    # Cria dicionário dos sprites
     grupos = {}
     grupos['todos_sprites'] = todos_sprites
     grupos['todos_espinhos'] = todos_espinhos
     grupos['todos_cogumelos'] = todos_cogumelos
     grupos['todos_espinhos_gigantes'] = todos_espinhos_gigantes
     grupos['blocos'] = blocos
-    
+
     # Cria fundo do jogo
     fundo_rect = assets[FUNDO].get_rect()
     
@@ -33,18 +36,19 @@ def game_screen(window):
     for linha in range(len(MAPA)):
         for coluna in range(len(MAPA[linha])):
             tipo_bloco = MAPA[linha][coluna]
+            # Verifica se deve ser inserido o bloco no jogo
             if tipo_bloco == BLOCO:
                 tile = Blocos(grupos, assets, linha, coluna)
                 todos_sprites.add(tile)
                 blocos.add(tile)
-                
+                           
     # Cria o jogador
     jogador = Peach(grupos, assets, 14, 0)
     todos_sprites.add(jogador)
     
     # Cria os espinhos
     for i in range(4):
-        espinho= Espinho(assets, grupos)
+        espinho = Espinho(assets, grupos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
         
@@ -58,36 +62,42 @@ def game_screen(window):
     plataforma = Plataforma(assets)
     blocos.add(plataforma)
 
-    # Cria os estados do personagem
-    FINAL = 0 #Estado para a tela fechar
-    JOGANDO = 1 #Estado enquanto a personagem tem vidas
-    MORRENDO = 2 #Estado quando a personagem não tem mais vidas ()
-    PERDENDO_VIDAS = 3 #Estado quando a personagem perde uma vida
-    #GANHANDO = 4 #Estado quando acabou o tempo e o jogador não perdeu
+    # Cria os estados do jogador
+    FINAL = 0 # Estado para a tela fechar
+    JOGANDO = 1 # Estado enquanto o jogador tem vidas
+    MORRENDO = 2 # Estado quando o jogador não tem mais vidas ()
+    PERDENDO_VIDAS = 3 # Estado quando o jogador perde uma vida
+    #GANHANDO = 4 # Estado quando acabou o tempo e o jogador não perdeu
 
     # Cria as vidas do jogador
     vidas = 3
     keys_down = {}
-    estado = JOGANDO
+
     # ===== Loop principal =====
+    # Define o estado atual do jogador
+    estado = JOGANDO
+    
+    # Define as variáveis para contagem do tempo
     ultimo_cogumelo = pygame.time.get_ticks()
     ultimo_espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
     comeco_jogo = pygame.time.get_ticks()
 
+    # Carrega a imagem da trilha sonora
     assets[TRILHA_SONORA].play()
 
-    while estado != FINAL:
+    # Estabelece as condições do jogo
+    while estado != QUIT:
         clock.tick(FPS)
-        # ----- Trata eventos
+        # Trata eventos
         for event in pygame.event.get():
-            # ----- Verifica consequências
+            # Verifica consequências
             if event.type == pygame.QUIT:
-                estado = FINAL
-            # ---- Verifica se apertou alguma tecla.
+                estado = QUIT
+            # Verifica se o jogador apertou alguma tecla
             if estado == JOGANDO:
                 if event.type == pygame.KEYDOWN:
-                    # Dependendo da tecla, altera a velocidade.
+                    # Altera a velocidade
                     keys_down[event.key] = True
                     if event.key == pygame.K_LEFT:
                         jogador.velocidadex -= VELOCIDADE_X
@@ -95,17 +105,16 @@ def game_screen(window):
                         jogador.velocidadex += VELOCIDADE_X
                     if event.key == pygame.K_UP or event.key == pygame.K_SPACE:
                         jogador.jump()
-                # Verifica se soltou alguma tecla.
+                # Verifica se o jogador soltou alguma tecla
                 if event.type == pygame.KEYUP:
-                    # Dependendo da tecla, altera a velocidade.
+                    # Altera a velocidade
                     if event.key in keys_down and keys_down[event.key]:
                         if event.key == pygame.K_LEFT:
                             jogador.velocidadex += VELOCIDADE_X
                         if event.key == pygame.K_RIGHT:
                             jogador.velocidadex -= VELOCIDADE_X
 
-        # ----- Atualiza estado do jogo
-        # Atualiza a posição dos espinhos
+        # Atualiza a posição dos sprites
         todos_sprites.update()
         
         # Atualiza posicao da imagem de fundo
@@ -115,17 +124,19 @@ def game_screen(window):
         if fundo_rect.top > ALTURA:
             fundo_rect.y -= fundo_rect.height
         
-        # ---- Verifica se houve contato da Peach com o cogumelo ou espinho
+        # Verifica se houve contato da Peach com o cogumelo ou espinho
         if estado == JOGANDO:
+            # Define o momento atual do jogo
             atual = pygame.time.get_ticks()
-            # Recria o cogumelo após 45 segundos
+            
+            # Recria o cogumelo após 45 segundos que o último apareceu
             if atual - ultimo_cogumelo > 45000:
                 ultimo_cogumelo = atual
                 c = Cogumelo(assets[COGUMELO_IMG], blocos)
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
-            # Recria o cogumelo após 60 segundos
+            # Recria o cogumelo após 60 segundos que o último apareceu
             if atual - ultimo_espinho_gigante > 60000:
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
@@ -133,106 +144,149 @@ def game_screen(window):
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
-            # Recria a plataforma após ALGUM TEMPO --> ATENÇÃO
-            if atual - ultima_plataforma > 60000:
+            # Recria a plataforma após 60 segundos que a última apareceu
+            if atual - ultima_plataforma > 10000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets[BLOCO_IMG], blocos)
                 todos_sprites.add(p)
                 blocos.add(p)
 
-            # Determina um tempo máximo de jogo
+            # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
             if atual - comeco_jogo > 1000000:
-                estado = FINAL #Mudar para ganhando quando colocarmos a tela de vencedor
+                estado = FINAL #(Apagar depois)
+                #return WIN
 
             # Indica as colisões do jogador com cogumelos e espinhos
+            # Cria uma lista de danos causados pelo espinho
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
+            # Cria uma lista dos contatos entre o jogador e os cogumelos
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
+            # Cria uma lista e danos causados pelo espinho gigante
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
 
-            # O espinho é destruido e precisa ser recriado
+            # Para cada espinho destruído, outro é criado
             for esp in dano:
                 e = Espinho(assets, grupos)
                 todos_sprites.add(e)
                 todos_espinhos.add(e)  
     
-            # Se o jogador encostou no espinho
+            # Se o jogador encostou no espinho:
             if len(dano) > 0:
-                jogador.kill
+                # Faz a imagem do jogador desaparecer
+                jogador.kill()
+                # Faz o jogador perder uma vida
                 vidas -= 1
+                # Muda o estado do jogador
                 estado = PERDENDO_VIDAS
+                # Se as vidas acabarem:
                 if vidas == 0:
+                    # Muda o estado do jogador
                     estado = MORRENDO
+                    # Interrompe o som da trilha sonora
                     assets[TRILHA_SONORA].stop()
+                    # Inicia o som de morte
                     assets[SOM_MORTE].play
+                    # Carrega a animação de game over (DIMINUINDO_ANIM)
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
                 else:
+                    # Inicia o som do dano
                     assets[SOM_DANO].play
+                    # Carrega a animação do contato (PISCANDO_ANIM)
                     contato = Contato(jogador.rect.center, assets)
                     todos_sprites.add(contato)
+                    # Define o tempo de animação
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                print(contato)
 
-            # Se o jogador encostou no cogumelo
+            # Se o jogador encostou no cogumelo:
             if len(ganhando_vida) > 0:
+                # Inicia o som de ganho da vida
                 assets[SOM_COGUMELO].play()
+                # Jogador ganha um vida
                 vidas += 1
 
-            # Se o jogador encosta no espinho gigante
+            # Se o jogador encosta no espinho gigante:
             if len(dano_gigante) > 0:
+                # Faz a imagem do jogador desaparecer
                 jogador.kill()
+                # Verifica se o esinho gigante ainda está na tela
                 if len(todos_espinhos_gigantes) == 0:
+                    # Inicia o som do espinho gigante
                     assets[SOM_ESPINHO_GIGANTE].stop()
+                    # Reinicia a trilha sonora
                     assets[TRILHA_SONORA].play()
+                # Jogador perde uma vida
                 vidas -= 1
+                # Muda o estado do jogador
                 estado = PERDENDO_VIDAS
+                # Verifica a quantidade de vidas do jogador
                 if vidas == 0:
+                    # Muda o estado do jogador
                     estado = MORRENDO
+                    # Interrompe o som da trilha sonora
                     assets[TRILHA_SONORA].stop
-                    assets[SOM_DANO].play()
+                    # Interrompe o som do espinho gigante
+                    assets[SOM_ESPINHO_GIGANTE].stop
+                    # Inicia o som do dano
+                    assets[SOM_MORTE].play()
+                    # Carrega a animação de game over (DIMINUINDO_ANIM)
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
                 else:
+                    # Inicia o som do dano
                     assets[SOM_DANO].play
+                    # Carrega a animação de dano (PISCANDO_ANIM)
                     contato = Contato(jogador.rect.center, assets)
                     todos_sprites.add(contato)
+                    # Define o tempo de animação
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                print(contato)
-                
+            
+            # Para cada espinho gigante que é colocado em jogo:
             for espinho_gigante in todos_espinhos_gigantes:
                 # Verifica se saiu da tela
                 if espinho_gigante.rect.right < 0 or espinho_gigante.rect.left > LARGURA:
+                    # Faz a imagem do espinho gigante desaparecer
                     espinho_gigante.kill()
+                    # Verifica se a lista dos espinhos gigantes está vazia
                     if len(todos_espinhos_gigantes) == 0:
-                        som_espinho_gigante.stop()
-                        trilha_sonora.play()
+                        # Interrompe o som do espinho gigante
+                        assets[SOM_ESPINHO_GIGANTE].stop()
+                        # Reinicia a trilha sonora
+                        assets[TRILHA_SONORA].play()
                 
-
-        # Se o jogador perdeu uma vida
+        # Se a acabaram as vidas do jogador:
         elif estado == MORRENDO:
+            # Verifica se a animação de morte já acabou
             if not game_over.alive():
                 #estado = FINAL
                 return LOSE
+        
+        # Se o jogador perdeu uma vida:
         elif estado == PERDENDO_VIDAS:
+            # Verifica se a animação do dano já acabou
             if not contato.alive():
+                # Recria o jogador
                 jogador = Peach(grupos, assets, linha, coluna)
                 todos_sprites.add(jogador)
+                # Muda o estado do jogador
                 estado = JOGANDO
 
-        # Desenha os sprites
-        window.fill((0, 0, 0))  # Preenche com a cor branca
+        # Preenche a janela com a cor branca
+        window.fill((0, 0, 0))  
          
-        # Além disso, deve ser cíclica, ou seja, a parte de cima deve ser continuação da parte de baixo
+        # Redesenha o fundo em que a parte de cima deve ser continuação da parte de baixo
         window.blit(assets[FUNDO], fundo_rect)
 
         # Desenha o fundo com cópia pra cima
         fundo_rect2 = fundo_rect.copy()
+        # Verifica se o fundo passou da tela e redesenha
         if fundo_rect.top > 0:
             fundo_rect2.y -= fundo_rect2.height
+        # Preenche a janela novamente
         window.blit(assets[FUNDO], fundo_rect2)
         
         # Desenha os sprites
@@ -245,4 +299,12 @@ def game_screen(window):
         text_rect.topleft = (10,10)
         window.blit(text_surface, text_rect)
         
+        # Atualiza o jogo
         pygame.display.update()
+
+if __name__ == "__main__":
+    # Inicia o pygame
+    pygame.init()
+    # Configura a tela de jogo
+    window = pygame.display.set_mode((LARGURA, ALTURA))
+    game_screen(window)
