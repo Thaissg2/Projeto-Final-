@@ -77,8 +77,8 @@ def load_assets():
 
     # Define a animação da tela de vitória
     ganhando_anim = []
-    for i in range(0,3):
-        arquivo_anim = os.path.join(IMG_DIR, 'ganhando{}.png'.format(i))
+    for i in range(1,69):
+        arquivo_anim = os.path.join(IMG_DIR, 'Slide{}.PNG'.format(i))
         fundo = pygame.image.load(arquivo_anim)
         fundo= pygame.transform.scale(fundo, (LARGURA, ALTURA))
         ganhando_anim.append(fundo)
