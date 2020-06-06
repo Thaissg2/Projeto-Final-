@@ -47,7 +47,7 @@ def game_screen(window):
     todos_sprites.add(jogador)
     
     # Cria os espinhos
-    for i in range(4):
+    for i in range(2):
         espinho = Espinho(assets, grupos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
@@ -67,7 +67,7 @@ def game_screen(window):
     JOGANDO = 1 # Estado enquanto o jogador tem vidas
     MORRENDO = 2 # Estado quando o jogador não tem mais vidas ()
     PERDENDO_VIDAS = 3 # Estado quando o jogador perde uma vida
-    #GANHANDO = 4 # Estado quando acabou o tempo e o jogador não perdeu
+    GANHANDO = 4 # Estado quando acabou o tempo e o jogador não perdeu
 
     # Cria as vidas do jogador
     vidas = 3
@@ -130,31 +130,33 @@ def game_screen(window):
             atual = pygame.time.get_ticks()
             
             # Recria o cogumelo após 45 segundos que o último apareceu
-            if atual - ultimo_cogumelo > 45000:
+            if atual - ultimo_cogumelo > 10000:
                 ultimo_cogumelo = atual
-                c = Cogumelo(assets[COGUMELO_IMG], blocos)
+                c = Cogumelo(assets, grupos)
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
             # Recria o cogumelo após 60 segundos que o último apareceu
-            if atual - ultimo_espinho_gigante > 60000:
+            if atual - ultimo_espinho_gigante > 10000:
+                assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
-                g = EspinhoGigante(assets, blocos)
+                g = EspinhoGigante(assets, grupos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após 60 segundos que a última apareceu
             if atual - ultima_plataforma > 10000:
                 ultima_plataforma = atual
-                p = PlataformaMóvel(assets[BLOCO_IMG], blocos)
+                p = PlataformaMóvel(assets, grupos)
                 todos_sprites.add(p)
                 blocos.add(p)
 
             # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
-            if atual - comeco_jogo > 1000000:
-                estado = FINAL #(Apagar depois)
-                #return WIN
+            if atual - comeco_jogo > 30000:
+                #Animação de vitória
+                estado = GANHANDO
+                return WIN
 
             # Indica as colisões do jogador com cogumelos e espinhos
             # Cria uma lista de danos causados pelo espinho
@@ -190,11 +192,11 @@ def game_screen(window):
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
                 else:
-                    # Inicia o som do dano
-                    assets[SOM_DANO].play
                     # Carrega a animação do contato (PISCANDO_ANIM)
                     contato = Contato(jogador.rect.center, assets)
                     todos_sprites.add(contato)
+                    # Inicia o som do dano
+                    assets[SOM_DANO].play
                     # Define o tempo de animação
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
@@ -262,8 +264,13 @@ def game_screen(window):
         elif estado == MORRENDO:
             # Verifica se a animação de morte já acabou
             if not game_over.alive():
-                #estado = FINAL
+                assets[TRILHA_SONORA].stop()
                 return LOSE
+
+        # Se a acabaram as vidas do jogador:
+        elif estado == GANHANDO:
+            assets[TRILHA_SONORA].stop()
+            return WIN
         
         # Se o jogador perdeu uma vida:
         elif estado == PERDENDO_VIDAS:

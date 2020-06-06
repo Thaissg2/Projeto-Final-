@@ -24,13 +24,15 @@ COGUMELO_ALTURA = 35
 COGUMELO_LARGURA = 35
 GIGANTE_ALTURA = 200
 GIGANTE_LARGURA = 200
+PLATAFORMA_MOVEL_LARGURA = 220
+PLATAFORMA_MOVEL_ALTURA = 40
 
 # Define os estados para controle do jogo
 INICIO = 0 # Estado do jogo para tela de início
 JOGO = 1 # Estado do jogo quando o jogador ainda tem vidas
-QUIT = 2 # Estado do jogo quando o jogador fecha a janela
-LOSE = 3 # Estado do jogo quando o jogador perde todas as vidas
-WIN = 4 # Estado do jogo quando o jogador ganha (sobrevive após o tempo máximo)
+LOSE = 2 # Estado do jogo quando o jogador perde todas as vidas
+WIN = 3 # Estado do jogo quando o jogador ganha (sobrevive após o tempo máximo)
+QUIT = 4 # Estado do jogo quando o jogador fecha a janela
 
 
 # Configura os estados do jogador para o pulo

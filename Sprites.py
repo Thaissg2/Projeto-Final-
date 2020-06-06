@@ -80,7 +80,7 @@ class Peach(pygame.sprite.Sprite):
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
                 self.rect.left = colisão.rect.right
-
+                
     def jump (self):
         if self.state == PARADO:
             self.velocidadey -= PULO
@@ -167,14 +167,15 @@ class EspinhoGigante(pygame.sprite.Sprite):
 
 # Classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
-    def __init__(self, grupos, assets):
+    def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
-        # Define a i
+        # Define a imagem da classe
+        self.image = assets[PLATAFORMA_MOVEL_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhes sobre o posicionamento
         self.rect = self.image.get_rect()
         # Posiciona a plataforma
-        self.rect.x = LARGURA/2
+        self.rect.centerx = LARGURA/2
         self.rect.bottom = 0
         self.velocidadex = 0
         self.velocidadey = 2

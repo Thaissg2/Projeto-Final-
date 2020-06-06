@@ -4,15 +4,13 @@ import os
 from Configuracao import *
 from Assets import *
 
-def end_screen(screen):
+def win_screen(screen):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
     assets = load_assets()
 
     # Carrega o fundo da tela inicial
-    fundo = assets[GAMEOVER_FUNDO]
-    fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
-    fundo_rect = fundo.get_rect()
+    fundo = assets[GANHANDO_ANIM]
 
     running = True
     while running:
@@ -23,7 +21,7 @@ def end_screen(screen):
         # Inicia o som
         assets[TRILHA_SONORA].stop()
         assets[SOM_ESPINHO_GIGANTE].stop
-        assets[SOM_TELA_GAMEOVER].play()
+        assets[SOM_VITORIA].play()
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
             # Verifica se foi fechado.
@@ -32,7 +30,7 @@ def end_screen(screen):
                 running = False
 
         # Desenha a tela de game over
-        screen.blit(assets[GAMEOVER_FUNDO], fundo_rect)
+        screen.blit(assets[GANHANDO_ANIM], fundo)
 
         # Depois de desenhar tudo, inverte o display.
         pygame.display.flip()
