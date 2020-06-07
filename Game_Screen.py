@@ -154,7 +154,7 @@ def game_screen(window):
 
             # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
             if atual - comeco_jogo > 30000:
-                #Animação de vitória
+                # Animação de vitória
                 estado = GANHANDO
                 return WIN
 
@@ -187,7 +187,7 @@ def game_screen(window):
                     # Interrompe o som da trilha sonora
                     assets[TRILHA_SONORA].stop()
                     # Inicia o som de morte
-                    assets[SOM_MORTE].play
+                    assets[SOM_MORTE].play()
                     # Carrega a animação de game over (DIMINUINDO_ANIM)
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
@@ -196,7 +196,7 @@ def game_screen(window):
                     contato = Contato(jogador.rect.center, assets)
                     todos_sprites.add(contato)
                     # Inicia o som do dano
-                    assets[SOM_DANO].play
+                    assets[SOM_DANO].play()
                     # Define o tempo de animação
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
@@ -228,9 +228,9 @@ def game_screen(window):
                     # Muda o estado do jogador
                     estado = MORRENDO
                     # Interrompe o som da trilha sonora
-                    assets[TRILHA_SONORA].stop
+                    assets[TRILHA_SONORA].stop()
                     # Interrompe o som do espinho gigante
-                    assets[SOM_ESPINHO_GIGANTE].stop
+                    assets[SOM_ESPINHO_GIGANTE].stop()
                     # Inicia o som do dano
                     assets[SOM_MORTE].play()
                     # Carrega a animação de game over (DIMINUINDO_ANIM)
@@ -238,7 +238,7 @@ def game_screen(window):
                     todos_sprites.add(game_over)
                 else:
                     # Inicia o som do dano
-                    assets[SOM_DANO].play
+                    assets[SOM_DANO].play()
                     # Carrega a animação de dano (PISCANDO_ANIM)
                     contato = Contato(jogador.rect.center, assets)
                     todos_sprites.add(contato)

@@ -126,13 +126,22 @@ class Espinho(pygame.sprite.Sprite):
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+        # Corrige a posição do espinho antes da colisão
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
+        # Se colidiu com algum bloco, volta para o ponto anterior
         for colisão in colisões:
             self.velocidadey = colisão.velocidadey
         if len(colisões) == 0:
             self.velocidadey = 8
+        #if colisões:
+        #    self.velocidadex *= 1
+        #   # Desfaz o movimento
+        #    self.rect.x += self.velocidadex
+        #    # Corrige a posição do espinho antes da colisão
+        #    self.rect.y += self.velocidadey
+
 
 # Classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
