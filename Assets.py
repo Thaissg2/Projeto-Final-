@@ -38,7 +38,7 @@ def load_assets():
     assets[FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'fundo2.jpg')).convert()
     assets[FUNDO] = pygame.transform.scale(assets['fundo'], (LARGURA, ALTURA))
         # Carrega a imagem da tela de início
-    assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpg')).convert()
+    assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpeg')).convert()
     assets[INIT_FUNDO] = pygame.transform.scale(assets['init_fundo'], (LARGURA, ALTURA))
         # Carrega a imagem da tela de game over
     assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_gameover.jpeg')).convert()

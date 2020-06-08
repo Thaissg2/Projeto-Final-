@@ -55,6 +55,7 @@ espinho_gigante_img = pygame.transform.scale(espinho_gigante_img, (GIGANTE_LARGU
 coracao = pygame.font.Font('assets/PressStart2P.ttf', 28)
 piscando_anim = []
 diminuindo_anim = []
+flirby = []
 
 for i in range(0,8):
     # Definindo animmação do dano
@@ -71,6 +72,7 @@ for i in lista_animacao:
       img2 = pygame.transform.scale(img2, (3*i, 5*i))
       diminuindo_anim.append(img2)
 
+
 # Carrega os sons do jogo
 trilha_sonora = pygame.mixer.Sound('assets/trilha_sonora1.wav')
 som_morte = pygame.mixer.Sound('assets/morte.wav')
@@ -82,12 +84,13 @@ som_espinho_gigante = pygame.mixer.Sound('assets/Boss_fight2.wav')
 GRAVIDADE = 5
 # Define a velocidade inicial no pulo
 PULO = 45
-# Define a velocidade em x
+# Define a velocidade em do jogador
 VELOCIDADE_X = 9
+VELOCIDADE_ROT = 100
 
 # Definindo tipos de blocos
 BLOCO = 0
-VAZIO = -1 
+VAZIO = -1
 
 # Definindo velocidade do fundo
 VELOCIDADE_FUNDO = -2
@@ -129,7 +132,7 @@ class Blocos(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         # Posiciona o tile
         self.rect.x = BLOCO_TAMANHO * coluna
-        self.rect.y = BLOCO_TAMANHO * linha 
+        self.rect.y = BLOCO_TAMANHO * linha
         self.velocidadey = 0
 
 # ----- Inicia estruturas de dados
@@ -193,18 +196,19 @@ class Peach(pygame.sprite.Sprite):
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
                 self.rect.left = colisão.rect.right
-    
+
     # Método que faz o personagem pular
     def jump (self):
         if self.state == PARADO:
             self.velocidadey -= PULO
             self.state = PULANDO
-    
+
 
 class Espinho(pygame.sprite.Sprite):
     def __init__(self, espinho_img, blocos):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
+        self.orig_image = espinho_img
         self.image = espinho_img
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -213,9 +217,19 @@ class Espinho(pygame.sprite.Sprite):
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
         self.blocks = blocos
+        if self.velocidadex > 0:
+            self.rot_velocidade = -10
+        else:
+            self.rot_velocidade = 10
+        self.rot = 0
 
     def update(self):
         # Atualizando a posição do espinho
+        center = self.rect.center
+        self.rot = (self.rot + self.rot_velocidade) % 360
+        self.image = pygame.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se o espinho passar do final da tela, volta para cima e sorteia
@@ -245,6 +259,8 @@ class Espinho(pygame.sprite.Sprite):
         if len(colisões) == 0:
             self.velocidadey = 8
 
+        #
+
 # Costruindo classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
     def __init__(self, espinho_gigante_img, blocos):
@@ -268,7 +284,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0 
+            self.velocidadey = 0
             if self.velocidadex == 0:
                 self.velocidadex = 5
 
@@ -298,38 +314,38 @@ class Contato(pygame.sprite.Sprite):
     def __init__(self, center, piscando_anim):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
- 
+
         # Armazena a animação da morte
         self.piscando_anim = piscando_anim
- 
+
         # Inicia o processo de animação colocando a primeira imagem na tela.
         self.frame = 0  # Armazena o índice atual na animação
         self.image = self.piscando_anim[self.frame]  # Pega a primeira imagem
         self.rect = self.image.get_rect()
         self.rect.center = center  # Posiciona o centro da imagem
- 
+
         # Guarda o tick da primeira imagem, ou seja, o momento em que a imagem foi mostrada
         self.last_update = pygame.time.get_ticks()
- 
+
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
         # próxima imagem da animação será mostrada
         self.frame_ticks = 50
- 
+
     def update(self):
         # Verifica o tick atual.
         atual = pygame.time.get_ticks()
         # Verifica quantos ticks se passaram desde a ultima mudança de frame.
         elapsed_ticks = atual - self.last_update
- 
+
         # Se já está na hora de mudar de imagem...
         if elapsed_ticks > self.frame_ticks:
             # Marca o tick da nova imagem.
             self.last_update = atual
- 
+
             # Avança um quadro.
             self.frame += 1
- 
+
             # Verifica se já chegou no final da animação.
             if self.frame == len(self.piscando_anim):
                 # Se sim, tchau piscando!
@@ -347,38 +363,38 @@ class GameOver(pygame.sprite.Sprite):
     def __init__(self, center, diminuindo_anim):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
- 
+
         # Armazena a animação da morte
         self.diminuindo_anim = diminuindo_anim
- 
+
         # Inicia o processo de animação colocando a primeira imagem na tela.
         self.frame = 0  # Armazena o índice atual na animação
         self.image = self.diminuindo_anim[self.frame]  # Pega a primeira imagem
         self.rect = self.image.get_rect()
         self.rect.center = center  # Posiciona o centro da imagem
- 
+
         # Guarda o tick da primeira imagem, ou seja, o momento em que a imagem foi mostrada
         self.last_update = pygame.time.get_ticks()
- 
+
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos.
         # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a
         # próxima imagem da animação será mostrada
         self.frame_ticks = 101
- 
+
     def update(self):
         # Verifica o tick atual.
         atual = pygame.time.get_ticks()
         # Verifica quantos ticks se passaram desde a ultima mudança de frame.
         elapsed_ticks = atual - self.last_update
- 
+
         # Se já está na hora de mudar de imagem...
         if elapsed_ticks > self.frame_ticks:
             # Marca o tick da nova imagem.
             self.last_update = atual
- 
+
             # Avança um quadro.
             self.frame += 1
- 
+
             # Verifica se já chegou no final da animação.
             if self.frame == len(self.diminuindo_anim):
                 # Se sim, tchau diminuindi!
@@ -453,10 +469,10 @@ def game_screen(window):
                 blocos.add(tile)
     # Adiciona o jogador por cima dos blocos
     todos_sprites.add(jogador)
-    
+
     # Criando os espinhos
-    for i in range(1):
-        espinho= Espinho(espinho_img, blocos)
+    for i in range(4):
+        espinho = Espinho(espinho_img, blocos)
         todos_sprites.add(espinho)
         todos_espinhos.add(espinho)
 
@@ -483,6 +499,9 @@ def game_screen(window):
     keys_down = {}
 
     # ===== Loop principal =====
+
+
+
     ultimo_cogumelo = pygame.time.get_ticks()
     ultimo_espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
@@ -534,7 +553,7 @@ def game_screen(window):
                 ultimo_cogumelo = atual
                 c = Cogumelo(cogumelo_img, blocos)
                 todos_sprites.add(c)
-                todos_cogumelos.add(c)      
+                todos_cogumelos.add(c)
 
             if atual - ultimo_espinho_gigante > 60000:
                 trilha_sonora.stop()
@@ -543,7 +562,7 @@ def game_screen(window):
                 g = EspinhoGigante(espinho_gigante_img, blocos)
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
-    
+
 
             if atual - ultima_plataforma > 60000:
                 ultima_plataforma = atual
@@ -557,12 +576,12 @@ def game_screen(window):
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
-            
+
             for esp in dano:
             # O espinho é destruido e precisa ser recriado
                 e = Espinho(espinho_img, blocos)
                 todos_sprites.add(e)
-                todos_espinhos.add(e)  
+                todos_espinhos.add(e)
 
             if len(dano) > 0:
                 jogador.kill()
@@ -608,7 +627,7 @@ def game_screen(window):
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
                 print(contato)
-            
+
             for espinho_gigante in todos_espinhos_gigantes:
                 # Verifica se saiu da tela
                 if espinho_gigante.rect.right < 0 or espinho_gigante.rect.left > LARGURA:
@@ -637,7 +656,7 @@ def game_screen(window):
         if fundo_rect.top > 0:
             fundo_rect2.y -= fundo_rect2.height
         window.blit(fundo, fundo_rect2)
-       
+
         # Desenhando espinhos
         todos_sprites.draw(window)
         window.blit(plataforma.image, plataforma.rect)

@@ -130,14 +130,14 @@ def game_screen(window):
             atual = pygame.time.get_ticks()
             
             # Recria o cogumelo após 45 segundos que o último apareceu
-            if atual - ultimo_cogumelo > 10000:
+            if atual - ultimo_cogumelo > 45000:
                 ultimo_cogumelo = atual
                 c = Cogumelo(assets, grupos)
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
             # Recria o cogumelo após 60 segundos que o último apareceu
-            if atual - ultimo_espinho_gigante > 10000:
+            if atual - ultimo_espinho_gigante > 60000:
                 assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
@@ -146,16 +146,20 @@ def game_screen(window):
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após 60 segundos que a última apareceu
-            if atual - ultima_plataforma > 10000:
+            if atual - ultima_plataforma > 60000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets, grupos)
                 todos_sprites.add(p)
                 blocos.add(p)
 
             # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
-            if atual - comeco_jogo > 30000:
-                # Animação de vitória
+            if atual - comeco_jogo > 15000:
+                # Interrompe as músicas
+                assets[TRILHA_SONORA].stop()
+                assets[SOM_ESPINHO_GIGANTE].stop()
+                # Muda o estado do jogador
                 estado = GANHANDO
+                # Carrega a tela de vencedor
                 return WIN
 
             # Indica as colisões do jogador com cogumelos e espinhos
@@ -186,6 +190,7 @@ def game_screen(window):
                     estado = MORRENDO
                     # Interrompe o som da trilha sonora
                     assets[TRILHA_SONORA].stop()
+                    assets[SOM_ESPINHO_GIGANTE].stop()
                     # Inicia o som de morte
                     assets[SOM_MORTE].play()
                     # Carrega a animação de game over (DIMINUINDO_ANIM)
@@ -264,13 +269,10 @@ def game_screen(window):
         elif estado == MORRENDO:
             # Verifica se a animação de morte já acabou
             if not game_over.alive():
+                # Interrompe a trilha sonora
                 assets[TRILHA_SONORA].stop()
+                # Carrega a tela de game over
                 return LOSE
-
-        # Se a acabaram as vidas do jogador:
-        elif estado == GANHANDO:
-            assets[TRILHA_SONORA].stop()
-            return WIN
         
         # Se o jogador perdeu uma vida:
         elif estado == PERDENDO_VIDAS:
@@ -308,10 +310,3 @@ def game_screen(window):
         
         # Atualiza o jogo
         pygame.display.update()
-
-if __name__ == "__main__":
-    # Inicia o pygame
-    pygame.init()
-    # Configura a tela de jogo
-    window = pygame.display.set_mode((LARGURA, ALTURA))
-    game_screen(window)
