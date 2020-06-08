@@ -90,6 +90,7 @@ class Espinho(pygame.sprite.Sprite):
     def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do espinho
+        self.orig_image = assets[ESPINHO_IMG]
         self.image = assets[ESPINHO_IMG]
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
@@ -102,9 +103,19 @@ class Espinho(pygame.sprite.Sprite):
         self.assets = assets
         self.grupos = grupos
         self.blocos = self.grupos['blocos']
+        if self.velocidadex > 0:
+            self.rot_velocidade = -10
+        else:
+            self.rot_velocidade = 10
+        self.rot = 0
 
     def update(self):
         # Atualizando a posição do espinho
+        center = self.rect.center
+        self.rot = (self.rot + self.rot_velocidade) % 360
+        self.image = pygame.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se o espinho passar do final da tela, volta para cima e sorteia novas posições e velocidades
@@ -125,6 +136,10 @@ class Espinho(pygame.sprite.Sprite):
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+            if self.velocidadex > 0:
+                self.rot_velocidade = -10
+            else:
+                self.rot_velocidade = 10
         # Corrige a posição do espinho antes da colisão
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocos, False)

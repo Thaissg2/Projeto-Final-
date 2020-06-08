@@ -246,6 +246,10 @@ class Espinho(pygame.sprite.Sprite):
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+            if self.velocidadex > 0:
+                self.rot_velocidade = -10
+            else:
+                self.rot_velocidade = 10
 
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
@@ -266,6 +270,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
     def __init__(self, espinho_gigante_img, blocos):
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
+        self.orig_image = espinho_gigante_img
         self.image = espinho_gigante_img
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -274,9 +279,16 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.velocidadex = 0
         self.velocidadey = 5
         self.blocks = blocos
+        self.rot_velocidade = -10
+        self.rot = 0
 
     def update(self):
         # Atualizando a posição do espinho gigante
+        center = self.rect.center
+        self.rot = (self.rot + self.rot_velocidade) % 360
+        self.image = pygame.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
 
@@ -284,9 +296,10 @@ class EspinhoGigante(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocks, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0
-            if self.velocidadex == 0:
-                self.velocidadex = 5
+            self.velocidadey = colisão.velocidadey
+            self.velocidadex = 5
+        if len(colisões) == 0:
+            self.velocidadey = 8
 
 # Construindo classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
@@ -555,7 +568,7 @@ def game_screen(window):
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)
 
-            if atual - ultimo_espinho_gigante > 60000:
+            if atual - ultimo_espinho_gigante > 20000:
                 trilha_sonora.stop()
                 som_espinho_gigante.play()
                 ultimo_espinho_gigante = atual
@@ -564,7 +577,7 @@ def game_screen(window):
                 todos_espinhos_gigantes.add(g)
 
 
-            if atual - ultima_plataforma > 60000:
+            if atual - ultima_plataforma > 20000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(bloco_img, blocos)
                 todos_sprites.add(p)
@@ -600,7 +613,6 @@ def game_screen(window):
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-                print(contato)
 
             if len(ganhando_vida) > 0:
                 som_cogumelo.play()
