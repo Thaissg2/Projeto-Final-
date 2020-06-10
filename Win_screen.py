@@ -4,10 +4,9 @@ import os
 from Configuracao import *
 from Assets import *
 
-def win_screen(screen):
+def win_screen(screen, assets):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
-    assets = load_assets()
 
     # Inicia o som
     assets[SOM_VITORIA].play()

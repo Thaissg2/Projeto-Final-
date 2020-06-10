@@ -90,8 +90,9 @@ class Espinho(pygame.sprite.Sprite):
     def __init__(self, assets, grupos):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do espinho
-        self.orig_image = assets[ESPINHO_IMG]
-        self.image = assets[ESPINHO_IMG]
+        espinho_i = random.randint(0, len(assets[ESPINHO_IMG])-1)
+        self.image = assets[ESPINHO_IMG][espinho_i]
+        self.orig_image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -123,12 +124,10 @@ class Espinho(pygame.sprite.Sprite):
             # Sorteio novo do tamanho
             ESPINHO_ALTURA = random.randint(50,130)
             ESPINHO_LARGURA = ESPINHO_ALTURA
-            # Recarrega as imagens com o novo tamanho
-            self.assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
-            self.assets[ESPINHO_IMG] = pygame.transform.scale(self.assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
             # Define a imagem do espinho
-            self.image = self.assets[ESPINHO_IMG]
-            self.orig_image = self.assets[ESPINHO_IMG]
+            espinho_i = random.randint(0, len(self.assets[ESPINHO_IMG])-1)
+            self.image = self.assets[ESPINHO_IMG][espinho_i]
+            self.orig_image = self.image
             self.mask = pygame.mask.from_surface(self.image)
             # Posiciona o espinho no jogo
             self.rect = self.image.get_rect()
@@ -138,7 +137,7 @@ class Espinho(pygame.sprite.Sprite):
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
             if self.velocidadex > 0:
-                self.rot_velocidade = -10
+                self.rot_velocidade = -10  #-int(10 / self.rect.width)
             else:
                 self.rot_velocidade = 10
         # Corrige a posição do espinho antes da colisão

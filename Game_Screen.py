@@ -7,12 +7,9 @@ from Assets import *
 from Sprites import *
 
 
-def game_screen(window):
+def game_screen(window, assets):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
-
-    # Carrega os assets
-    assets = load_assets()
 
     # Cria os grupos dos sprites
     todos_sprites = pygame.sprite.Group()
@@ -153,7 +150,7 @@ def game_screen(window):
                 blocos.add(p)
 
             # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
-            if atual - comeco_jogo > 15000:
+            if atual - comeco_jogo > 45000:
                 # Interrompe as músicas
                 assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].stop()

@@ -43,9 +43,6 @@ def load_assets():
         # Carrega a imagem da tela de game over
     assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_gameover.jpeg')).convert()
     assets[GAMEOVER_FUNDO] = pygame.transform.scale(assets['gameover_fundo'], (LARGURA, ALTURA))
-        # Carrega a imagem dos espinhos
-    assets[ESPINHO_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
-    assets[ESPINHO_IMG] = pygame.transform.scale(assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
         # Carrega a imagem da plataforma 
     assets[PLATAFORMA_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'plataforma.png')).convert_alpha()
     assets[PLATAFORMA_IMG] = pygame.transform.scale(assets['plataforma_img'], (PLATAFORMA_LARGURA, PLATAFORMA_ALTURA))
@@ -64,6 +61,11 @@ def load_assets():
         # Carrega a imagem da plataforma móvel
     assets[PLATAFORMA_MOVEL_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'plataforma_movel.png')).convert_alpha()
     assets[PLATAFORMA_MOVEL_IMG] = pygame.transform.scale(assets['plataforma_movel_img'], (PLATAFORMA_MOVEL_LARGURA, PLATAFORMA_MOVEL_ALTURA))
+        # Carrega a imagem dos espinhos
+    assets[ESPINHO_IMG] = []
+    for tamanho in range(50, 131, 10):
+        img = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
+        assets[ESPINHO_IMG].append(pygame.transform.scale(img, (tamanho, tamanho)))
 
     # Carrega as animações do jogo
     # Define animação do dano

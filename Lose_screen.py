@@ -4,10 +4,9 @@ import os
 from Configuracao import *
 from Assets import *
 
-def end_screen(screen):
+def end_screen(screen, assets):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
-    assets = load_assets()
 
     # Carrega o fundo da tela inicial
     fundo = assets[GAMEOVER_FUNDO]

@@ -7,12 +7,9 @@ import os
 from Configuracao import *
 from Assets import *
 
-def init_screen(screen):
+def init_screen(screen, assets):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
-    
-    # Carrega os assets
-    assets = load_assets()
 
     # Carrega o background e o configura de acordo o tamanho da janela
     fundo = assets[INIT_FUNDO]
