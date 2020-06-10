@@ -128,6 +128,7 @@ class Espinho(pygame.sprite.Sprite):
             self.assets[ESPINHO_IMG] = pygame.transform.scale(self.assets['espinho_img'], (ESPINHO_LARGURA, ESPINHO_ALTURA))
             # Define a imagem do espinho
             self.image = self.assets[ESPINHO_IMG]
+            self.orig_image = self.assets[ESPINHO_IMG]
             self.mask = pygame.mask.from_surface(self.image)
             # Posiciona o espinho no jogo
             self.rect = self.image.get_rect()
