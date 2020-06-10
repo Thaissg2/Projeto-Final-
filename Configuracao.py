@@ -1,11 +1,25 @@
+""" O aquivo Configuracao.py define:
+    - Pastas com figuras, sons e fontes utilizadas no jogo
+    - Tamanho da janela do jogo
+    - Velocidade dos quadros~
+    - Tamanho das imagens
+    - Estados de controle do jogo
+    - Estados do jogador durante o pulo
+    - Velocidade do pulo
+    - Aceleração da gravidade
+    - Velocidade do jogador no eixo X
+    - Velocidade do fundo
+    - Tipos de blocos
+    - Mapa do jogo
+"""
+
 # Importa as bibliotecas necessárias
 from os import path
 
-# Estabelece as pastas que contém figuras e sons
+# Estabelece as pastas que contém figuras, sons e fontes
 IMG_DIR = path.join(path.dirname(__file__), 'assets.2', 'img')
 SND_DIR = path.join(path.dirname(__file__), 'assets.2', 'snd')
 FNT_DIR = path.join(path.dirname(__file__), 'assets.2', 'font')
-
 
 # Dados gerais do jogo
 LARGURA = 880
@@ -33,7 +47,7 @@ CHAVE_ALTURA = 90
 INICIO = 0 # Estado do jogo para tela de início
 JOGO = 1 # Estado do jogo quando o jogador ainda tem vidas
 LOSE = 2 # Estado do jogo quando o jogador perde todas as vidas
-WIN = 3 # Estado do jogo quando o jogador ganha (sobrevive após o tempo máximo)
+WIN = 3 # Estado do jogo quando o jogador ganha 
 QUIT = 4 # Estado do jogo quando o jogador fecha a janela
 
 

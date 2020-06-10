@@ -1,12 +1,19 @@
+""" O arquivo Sprites.py cria as diversas classes que serão utilizadas no jogo """
+
+# Importa as bibliotecas necessárias
 import random
 import pygame
+
+# Importa os arquivos necessários
 from Configuracao import *
 from Assets import *
 
 
 # Classe dos blocos
 class Blocos(pygame.sprite.Sprite):
+    """ Classe que define o mapa do jogo """
     def __init__(self, grupos, assets, linha, coluna):
+        """ Função que define a posição dos blocos durante o jogo """
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do bloco.
         self.image = assets[BLOCO_IMG]
@@ -21,7 +28,9 @@ class Blocos(pygame.sprite.Sprite):
 
 # Classe do jogador
 class Peach(pygame.sprite.Sprite):
+    """ Classe que cria o jogador """
     def __init__(self, grupos, assets, linha, coluna):
+        """ Função que define a posição inicial do jogador """
         pygame.sprite.Sprite.__init__(self)
         # Define o estado atual do jogador
         self.state = PARADO
@@ -42,6 +51,7 @@ class Peach(pygame.sprite.Sprite):
         self.assets = assets
 
     def update(self):
+        """ Função que atualiza a posição do jogador a cada frame """
         # Atualização da posição do jogador no eixo y
         self.velocidadey += GRAVIDADE
         if self.velocidadey > 0:
@@ -79,15 +89,18 @@ class Peach(pygame.sprite.Sprite):
                 self.rect.right = colisão.rect.left
             elif self.velocidadex < 0:
                 self.rect.left = colisão.rect.right
-                
+                        
     def jump (self):
+        """ Função que define o pulo do jogador """    
         if self.state == PARADO:
             self.velocidadey -= PULO
             self.state = PULANDO
 
 # Classe do espinho
 class Espinho(pygame.sprite.Sprite):
+    """ Classe que cria o espinho que causará dano caso ele encoste no jogador"""
     def __init__(self, assets, grupos):
+        """ Função que define a posição inicial do espinho """
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem do espinho
         espinho_i = random.randint(0, len(assets[ESPINHO_IMG])-1)
@@ -111,6 +124,7 @@ class Espinho(pygame.sprite.Sprite):
         self.rot = 0
 
     def update(self):
+        """ Função que atualiza a posição do espinho a cada frame """
         # Atualizando a posição do espinho
         center = self.rect.center
         self.rot = (self.rot + self.rot_velocidade) % 360
@@ -153,7 +167,9 @@ class Espinho(pygame.sprite.Sprite):
 
 # Classe do espinho gigante
 class EspinhoGigante(pygame.sprite.Sprite):
+    """ Classe que cria o espinho gigante que causará dano caso ele enconste o jogador"""
     def __init__(self, assets, grupos):
+        """ Função que define a posição inicial do espinho gigante """
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem da classe
         self.image = assets[ESPINHO_GIGANTE_IMG]
@@ -174,6 +190,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.rot = 0
         
     def update(self):
+        """ Função que atualiza a posição do espinho gigante a cada frame"""
         # Atualizando a posição do espinho gigante
         center = self.rect.center
         self.rot = (self.rot + self.rot_velocidade) % 360
@@ -191,9 +208,12 @@ class EspinhoGigante(pygame.sprite.Sprite):
         if len(colisões) == 0:
             self.velocidadey = 5
 
+
 # Classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
+    """ Classe que cria uma plataforma que aparece após um determinado tempo de jogo"""
     def __init__(self, assets, grupos):
+        """ Função que define a posição inicial da plataforma móvel """
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem da classe
         self.image = assets[PLATAFORMA_MOVEL_IMG]
@@ -209,15 +229,18 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         self.grupos = grupos
         self.blocos = grupos['blocos']
         self.assets = assets
-        
+    
     def update(self):
+        """ Função que atualiza a posição da plataforma a cada frame """
         # Atualizando a posição da plataforma móvel
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
 
 # Classe que representa contato da Peach com espinho
 class Contato(pygame.sprite.Sprite):
+    """ Classe que determina a animação de dano da Peach com o espinho """
     def __init__(self, center, assets):
+        """ Função que define a animação de dano """
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação de explosão
         self.piscando_anim = assets[PISCANDO_ANIM]
@@ -233,8 +256,9 @@ class Contato(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         # Controle de ticks de animação: troca de imagem a cada self.frame_ticks milissegundos
         self.frame_ticks = 50
-        
+    
     def update(self):
+        """ Função que atualiza o estado da animação do dano a cada frame """
         # Verifica o tick atual.
         atual = pygame.time.get_ticks()
         # Verifica quantos ticks se passaram desde a ultima mudança de frame
@@ -258,8 +282,9 @@ class Contato(pygame.sprite.Sprite):
 
 # Classe que representa animação de fim de jogo
 class GameOver(pygame.sprite.Sprite):
-    # Construtor da classe.
+    """ Classe que determina a animação de morte da Peach """
     def __init__(self, center, assets):
+        """ Função que define a animação da morte """
         # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação da morte
@@ -278,8 +303,10 @@ class GameOver(pygame.sprite.Sprite):
         # Quando pygame.time.get_ticks() - self.last_update > self.frame_ticks a próxima imagem da animação será mostrada
         self.frame_ticks = 101
 
+    
     def update(self):
-    # Verifica o tick atual.
+        """ Função que atualiza o estado da animação da morte a cada frame """
+        # Verifica o tick atual.
         atual = pygame.time.get_ticks()
         # Verifica quantos ticks se passaram desde a ultima mudança de frame
         elapsed_ticks = atual - self.last_update
@@ -303,7 +330,9 @@ class GameOver(pygame.sprite.Sprite):
 
 # Classe do Cogumelo
 class Cogumelo(pygame.sprite.Sprite):
+    """ Classe que determina a criação do cogumelo que dará vidas ao jogador caso eles se encostem """
     def __init__(self, assets, grupos):
+        """ Função que define a posição inicial do cogumelo """
         pygame.sprite.Sprite.__init__(self)
         # Armazena a imagem do cogumelo
         self.image = assets[COGUMELO_IMG]
@@ -319,8 +348,9 @@ class Cogumelo(pygame.sprite.Sprite):
         self.grupos = grupos
         self.blocos = grupos['blocos']
         self.assets = assets
-
+        
     def update(self):
+        """ Função que atualiza a posição do cogumelo a cada frame """
         # Atualizando a posição do cogumelo
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
@@ -336,7 +366,9 @@ class Cogumelo(pygame.sprite.Sprite):
 
 # Classe da plataforma fixa
 class Plataforma(pygame.sprite.Sprite):
+    """ Classe que determina a criação da plataforma """
     def __init__(self, assets):
+        """ Função que define a posição da plataforma durante o jogo """
         pygame.sprite.Sprite.__init__(self)
         self.image = assets[PLATAFORMA_IMG]
         self.rect = self.image.get_rect()
@@ -346,10 +378,13 @@ class Plataforma(pygame.sprite.Sprite):
 
 # Classe da chave de vitória
 class Chave(pygame.sprite.Sprite):
+    """ Classe que cria a chave que fará jogador ganhar"""
     def __init__(self, assets, grupos):
+        """ Função que define a posição inicial da chave """
         pygame.sprite.Sprite.__init__(self)
         # Armazena a imagem do cogumelo
         self.image = assets[CHAVE_IMG]
+        self.orig_image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         # Define a posição do cogumelo
         self.rect = self.image.get_rect()
@@ -362,9 +397,17 @@ class Chave(pygame.sprite.Sprite):
         self.grupos = grupos
         self.blocos = grupos['blocos']
         self.assets = assets
+        self.rot_velocidade = -10
+        self.rot = 0
 
     def update(self):
+        """ Função que atualiza a posição do a chave a cada frame """
         # Atualizando a posição da chave
+        center = self.rect.center
+        self.rot = (self.rot + self.rot_velocidade) % 360
+        self.image = pygame.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior

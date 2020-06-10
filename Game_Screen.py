@@ -1,3 +1,5 @@
+""" O arquivo Game_Screen.py define o esqueleto do jogo """
+
 # Importa as bibliotecas necessárias
 import pygame
 
@@ -8,6 +10,7 @@ from Sprites import *
 
 
 def game_screen(window, assets):
+    """ Função que define os acontecimentos durante o jogo """
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
 
@@ -61,7 +64,6 @@ def game_screen(window, assets):
     plataforma = Plataforma(assets)
     blocos.add(plataforma)
 
-    
     # Cria os estados do jogador
     FINAL = 0 # Estado para a tela fechar
     JOGANDO = 1 # Estado enquanto o jogador tem vidas
@@ -74,7 +76,7 @@ def game_screen(window, assets):
     keys_down = {}
 
     # ===================== Loop principal ==========================
-    
+    """ Estabelece o loop principal do jogo """
     # Define o estado atual do jogador
     estado = JOGANDO
     
@@ -132,14 +134,14 @@ def game_screen(window, assets):
             atual = pygame.time.get_ticks()
             
             # Recria o cogumelo após 45 segundos que o último apareceu
-            if atual - ultimo_cogumelo > 45000:
+            if atual - ultimo_cogumelo > 15000:
                 ultimo_cogumelo = atual
                 c = Cogumelo(assets, grupos)
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
             # Recria o espinho gigante após 60 segundos que o último apareceu
-            if atual - ultimo_espinho_gigante > 20000:
+            if atual - ultimo_espinho_gigante > 10000:
                 assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
@@ -148,7 +150,7 @@ def game_screen(window, assets):
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após 60 segundos que a última apareceu
-            if atual - ultima_plataforma > 20000:
+            if atual - ultima_plataforma > 10000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets, grupos)
                 todos_sprites.add(p)

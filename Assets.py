@@ -1,5 +1,10 @@
+""" O arquivo Assets.py configura as animações, sons e imagens presentes no jogo """
+
+# Importa as bibliotecas necessárias
 import pygame
 import os
+
+# Importa os arquivos
 from Configuracao import *
 
 # Define as variáveis da imagem
@@ -33,7 +38,7 @@ GANHANDO_ANIM = 'ganhando_anim'
 CORACAO = 'coracao'
 
 def load_assets():
-    # Carrega as imagens do jogo e configura os tamanhos
+    """ A função load_assets carrega as imagens que serão utilizadas em todo o jogo """
     assets = {}
         # Carrega imagem do background do jogo
     assets[FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'fundo2.jpg')).convert()
@@ -65,14 +70,14 @@ def load_assets():
         # Carrega chave final
     assets[CHAVE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'key.png')).convert_alpha()
     assets[CHAVE_IMG] = pygame.transform.scale(assets['chave_img'], (CHAVE_LARGURA, CHAVE_ALTURA))
-
         # Carrega a imagem dos espinhos
     assets[ESPINHO_IMG] = []
+        # Sorteia o tamanho dos espinhos que serão sorteados no jogo
     for tamanho in range(50, 131, 10):
         img = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
         assets[ESPINHO_IMG].append(pygame.transform.scale(img, (tamanho, tamanho)))
 
-    # Carrega as animações do jogo
+# Carrega as animações do jogo
     # Define animação do dano
     piscando_anim = []
     for i in range(0,8):

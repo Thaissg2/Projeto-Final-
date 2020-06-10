@@ -1,6 +1,11 @@
+""" O arquivo Tela_Principal.py que será utilizado pelo jogador para o jogo completo (tela inicial, jogo, tela de game over e tela de vitória) """
+
+# Importa as bibliotecas necessárias
 import pygame
 import random
 import os
+
+# Importa os arquivos do jogo
 from Configuracao import *
 from Init_screen import init_screen
 from Game_Screen import game_screen
