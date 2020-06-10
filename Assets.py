@@ -13,6 +13,7 @@ BLOCO_IMG = 'bloco_img'
 COGUMELO_IMG ='cogumelo_img'
 ESPINHO_GIGANTE_IMG = 'espinho_gigante_img'
 PLATAFORMA_MOVEL_IMG = 'plataforma_movel_img'
+CHAVE_IMG = 'chave_img'
 
 # Define as variáveis dos sons
 TRILHA_SONORA = 'trilha_sonora'
@@ -61,6 +62,10 @@ def load_assets():
         # Carrega a imagem da plataforma móvel
     assets[PLATAFORMA_MOVEL_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'plataforma_movel.png')).convert_alpha()
     assets[PLATAFORMA_MOVEL_IMG] = pygame.transform.scale(assets['plataforma_movel_img'], (PLATAFORMA_MOVEL_LARGURA, PLATAFORMA_MOVEL_ALTURA))
+        # Carrega chave final
+    assets[CHAVE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'key.png')).convert_alpha()
+    assets[CHAVE_IMG] = pygame.transform.scale(assets['chave_img'], (CHAVE_LARGURA, CHAVE_ALTURA))
+
         # Carrega a imagem dos espinhos
     assets[ESPINHO_IMG] = []
     for tamanho in range(50, 131, 10):

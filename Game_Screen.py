@@ -16,6 +16,7 @@ def game_screen(window, assets):
     todos_espinhos = pygame.sprite.Group()
     todos_cogumelos = pygame.sprite.Group()
     todos_espinhos_gigantes = pygame.sprite.Group()
+    todas_chaves = pygame.sprite.Group()
     blocos = pygame.sprite.Group()
 
     # Cria dicionário dos sprites
@@ -24,6 +25,7 @@ def game_screen(window, assets):
     grupos['todos_espinhos'] = todos_espinhos
     grupos['todos_cogumelos'] = todos_cogumelos
     grupos['todos_espinhos_gigantes'] = todos_espinhos_gigantes
+    grupos['todas_chaves'] = todas_chaves
     grupos['blocos'] = blocos
 
     # Cria fundo do jogo
@@ -59,6 +61,7 @@ def game_screen(window, assets):
     plataforma = Plataforma(assets)
     blocos.add(plataforma)
 
+    
     # Cria os estados do jogador
     FINAL = 0 # Estado para a tela fechar
     JOGANDO = 1 # Estado enquanto o jogador tem vidas
@@ -70,7 +73,8 @@ def game_screen(window, assets):
     vidas = 3
     keys_down = {}
 
-    # ===== Loop principal =====
+    # ===================== Loop principal ==========================
+    
     # Define o estado atual do jogador
     estado = JOGANDO
     
@@ -78,6 +82,7 @@ def game_screen(window, assets):
     ultimo_cogumelo = pygame.time.get_ticks()
     ultimo_espinho_gigante = pygame.time.get_ticks()
     ultima_plataforma = pygame.time.get_ticks()
+    ultima_chave = pygame.time.get_ticks()
     comeco_jogo = pygame.time.get_ticks()
 
     # Carrega a imagem da trilha sonora
@@ -133,8 +138,8 @@ def game_screen(window, assets):
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
-            # Recria o cogumelo após 60 segundos que o último apareceu
-            if atual - ultimo_espinho_gigante > 60000:
+            # Recria o espinho gigante após 60 segundos que o último apareceu
+            if atual - ultimo_espinho_gigante > 20000:
                 assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
@@ -143,29 +148,28 @@ def game_screen(window, assets):
                 todos_espinhos_gigantes.add(g)
 
             # Recria a plataforma após 60 segundos que a última apareceu
-            if atual - ultima_plataforma > 60000:
+            if atual - ultima_plataforma > 20000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets, grupos)
                 todos_sprites.add(p)
                 blocos.add(p)
 
             # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
-            if atual - comeco_jogo > 45000:
-                # Interrompe as músicas
-                assets[TRILHA_SONORA].stop()
-                assets[SOM_ESPINHO_GIGANTE].stop()
-                # Muda o estado do jogador
-                estado = GANHANDO
-                # Carrega a tela de vencedor
-                return WIN
+            if atual - ultima_chave > 10000:
+                ultima_chave = atual
+                ch = Chave(assets, grupos)
+                todos_sprites.add(ch)
+                todas_chaves.add(ch)
 
-            # Indica as colisões do jogador com cogumelos e espinhos
+            # Indica as colisões do jogador com os sprites
             # Cria uma lista de danos causados pelo espinho
             dano = pygame.sprite.spritecollide(jogador, todos_espinhos, True,  pygame.sprite.collide_mask)
             # Cria uma lista dos contatos entre o jogador e os cogumelos
             ganhando_vida = pygame.sprite.spritecollide(jogador, todos_cogumelos, True,  pygame.sprite.collide_mask)
-            # Cria uma lista e danos causados pelo espinho gigante
+            # Cria uma lista de danos causados pelo espinho gigante
             dano_gigante = pygame.sprite.spritecollide(jogador, todos_espinhos_gigantes, True,  pygame.sprite.collide_mask)
+            # Cria uma lista de contato da Peach e a chave
+            salvando_mario = pygame.sprite.spritecollide(jogador, todas_chaves, True, pygame.sprite.collide_mask)
 
             # Para cada espinho destruído, outro é criado
             for esp in dano:
@@ -211,6 +215,16 @@ def game_screen(window, assets):
                 # Jogador ganha um vida
                 vidas += 1
 
+            # Se a Peach encostar na chave:    
+            if len(salvando_mario) > 0:
+                # Interrompe as músicas
+                assets[TRILHA_SONORA].stop()
+                assets[SOM_ESPINHO_GIGANTE].stop()
+                # Muda o estado do jogador
+                estado = GANHANDO
+                # Carrega a tela de vencedor
+                return WIN
+
             # Se o jogador encosta no espinho gigante:
             if len(dano_gigante) > 0:
                 # Faz a imagem do jogador desaparecer
@@ -248,7 +262,7 @@ def game_screen(window, assets):
                     piscando_tick = pygame.time.get_ticks()
                     piscando_duracao = contato.frame_ticks * len(contato.piscando_anim)
                 keys_down = {}
-            
+
             # Para cada espinho gigante que é colocado em jogo:
             for espinho_gigante in todos_espinhos_gigantes:
                 # Verifica se saiu da tela
@@ -261,7 +275,7 @@ def game_screen(window, assets):
                         assets[SOM_ESPINHO_GIGANTE].stop()
                         # Reinicia a trilha sonora
                         assets[TRILHA_SONORA].play()
-                
+
         # Se a acabaram as vidas do jogador:
         elif estado == MORRENDO:
             # Verifica se a animação de morte já acabou

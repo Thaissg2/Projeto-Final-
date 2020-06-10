@@ -157,6 +157,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Define a imagem da classe
         self.image = assets[ESPINHO_GIGANTE_IMG]
+        self.orig_image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
@@ -169,18 +170,26 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.blocos = grupos['blocos']
         self.grupos = grupos
         self.assets = assets
+        self.rot_velocidade = -5
+        self.rot = 0
         
     def update(self):
         # Atualizando a posição do espinho gigante
+        center = self.rect.center
+        self.rot = (self.rot + self.rot_velocidade) % 360
+        self.image = pygame.transform.rotate(self.orig_image, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior
         colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
-            self.velocidadey = 0 
-            if self.velocidadex == 0:
-                self.velocidadex = 5
+            self.velocidadey = colisão.velocidadey
+            self.velocidadex = 5
+        if len(colisões) == 0:
+            self.velocidadey = 5
 
 # Classe da Plataforma Móvel
 class PlataformaMóvel(pygame.sprite.Sprite):
@@ -334,3 +343,33 @@ class Plataforma(pygame.sprite.Sprite):
         self.rect.bottom = ALTURA
         self.assets = assets
         self.velocidadey = 0
+
+# Classe da chave de vitória
+class Chave(pygame.sprite.Sprite):
+    def __init__(self, assets, grupos):
+        pygame.sprite.Sprite.__init__(self)
+        # Armazena a imagem do cogumelo
+        self.image = assets[CHAVE_IMG]
+        self.mask = pygame.mask.from_surface(self.image)
+        # Define a posição do cogumelo
+        self.rect = self.image.get_rect()
+        # Posiciona o cogumelo
+        self.rect.x = LARGURA/2
+        self.rect.y = -CHAVE_ALTURA 
+        self.velocidadex = 0
+        self.velocidadey = 4
+        # Guarda o grupo de blocos
+        self.grupos = grupos
+        self.blocos = grupos['blocos']
+        self.assets = assets
+
+    def update(self):
+        # Atualizando a posição da chave
+        self.rect.x += self.velocidadex
+        self.rect.y += self.velocidadey
+        # Se colidiu com algum bloco, volta para o ponto anterior
+        colisões = pygame.sprite.spritecollide(self, self.blocos, False)
+        # Corrige a posição do espinho antes da colisão
+        for colisão in colisões:
+            self.velocidadey = 0
+            self.velocidadex = 0

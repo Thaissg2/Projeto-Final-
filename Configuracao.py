@@ -26,6 +26,8 @@ GIGANTE_ALTURA = 200
 GIGANTE_LARGURA = 200
 PLATAFORMA_MOVEL_LARGURA = 220
 PLATAFORMA_MOVEL_ALTURA = 40
+CHAVE_LARGURA = 90
+CHAVE_ALTURA = 90
 
 # Define os estados para controle do jogo
 INICIO = 0 # Estado do jogo para tela de início
