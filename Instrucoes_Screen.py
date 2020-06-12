@@ -7,12 +7,12 @@ import os
 from Configuracao import *
 from Assets import *
 
-def init_screen(screen, assets):
+def instrucoes_screen(screen, assets):
     # Ajusta a velocidade do jogo
     clock = pygame.time.Clock()
 
     # Carrega o background e o configura de acordo o tamanho da janela
-    fundo = assets[INIT_FUNDO]
+    fundo = assets[INSTRUCOES_IMG]
     fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
     fundo_rect = fundo.get_rect()
 
@@ -29,9 +29,9 @@ def init_screen(screen, assets):
                 estado = QUIT
                 # Interrompe a tela de início e fecha o jogo
                 running = False
-            # Verifica se o jogador clicou em alguma teca
+            # Verifica se o jogador clicou em alguma tecLa
             if event.type == pygame.KEYUP:
-                estado = INSTRUCOES
+                estado = JOGO
                 # Interrompe a tela de início e fecha o jogo
                 running = False
         # A cada loop, redesenha o fundo

@@ -1,4 +1,4 @@
-""" O arquivo Tela_Principal.py que será utilizado pelo jogador para o jogo completo (tela inicial, jogo, tela de game over e tela de vitória) """
+""" O arquivo Tela_Principal.py que será utilizado pelo jogador para o jogo completo (tela inicial, instruções, jogo, tela de game over e tela de vitória) """
 
 # Importa as bibliotecas necessárias
 import pygame
@@ -8,6 +8,7 @@ import os
 # Importa os arquivos do jogo
 from Configuracao import *
 from Init_screen import init_screen
+from Instrucoes_Screen import instrucoes_screen
 from Game_Screen import game_screen
 from Lose_screen import end_screen
 from Win_screen import win_screen
@@ -26,6 +27,8 @@ estado = INICIO
 while estado != QUIT:
     if estado == INICIO:
         estado = init_screen(window, assets)
+    elif estado == INSTRUCOES:
+        estado = instrucoes_screen(window, assets)
     elif estado == JOGO:
         estado = game_screen(window, assets)
     elif estado == LOSE:

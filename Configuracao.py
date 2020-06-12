@@ -45,10 +45,11 @@ CHAVE_ALTURA = 90
 
 # Define os estados para controle do jogo
 INICIO = 0 # Estado do jogo para tela de início
-JOGO = 1 # Estado do jogo quando o jogador ainda tem vidas
-LOSE = 2 # Estado do jogo quando o jogador perde todas as vidas
-WIN = 3 # Estado do jogo quando o jogador ganha 
-QUIT = 4 # Estado do jogo quando o jogador fecha a janela
+INSTRUCOES = 1 # Estado do jogo que apresenta as instruções
+JOGO = 2 # Estado do jogo quando o jogador ainda tem vidas
+LOSE = 3 # Estado do jogo quando o jogador perde todas as vidas
+WIN = 4 # Estado do jogo quando o jogador ganha 
+QUIT = 5 # Estado do jogo quando o jogador fecha a janela
 
 
 # Configura os estados do jogador para o pulo

@@ -10,6 +10,7 @@ from Configuracao import *
 # Define as variáveis da imagem
 FUNDO = 'fundo'
 INIT_FUNDO = 'init_fundo'
+INSTRUCOES_IMG = 'instrucoes_img'
 GAMEOVER_FUNDO = 'gameover_fundo'
 ESPINHO_IMG = 'espinho_img'
 PLATAFORMA_IMG = 'plataforma_img'
@@ -46,6 +47,9 @@ def load_assets():
         # Carrega a imagem da tela de início
     assets[INIT_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_inicio.jpeg')).convert()
     assets[INIT_FUNDO] = pygame.transform.scale(assets['init_fundo'], (LARGURA, ALTURA))
+        # Carrega a imagem das instruções
+    assets[INSTRUCOES_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'instrucoes.jpeg')).convert()
+    assets[INSTRUCOES_IMG] = pygame.transform.scale(assets['instrucoes_img'], (LARGURA, ALTURA))
         # Carrega a imagem da tela de game over
     assets[GAMEOVER_FUNDO] = pygame.image.load(os.path.join(IMG_DIR, 'tela_gameover.jpeg')).convert()
     assets[GAMEOVER_FUNDO] = pygame.transform.scale(assets['gameover_fundo'], (LARGURA, ALTURA))
