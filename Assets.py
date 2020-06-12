@@ -74,11 +74,12 @@ def load_assets():
         # Carrega chave final
     assets[CHAVE_IMG] = pygame.image.load(os.path.join(IMG_DIR, 'key.png')).convert_alpha()
     assets[CHAVE_IMG] = pygame.transform.scale(assets['chave_img'], (CHAVE_LARGURA, CHAVE_ALTURA))
-        # Carrega a imagem dos espinhos
+        # Cria uma lista que serão carregados os espinhos
     assets[ESPINHO_IMG] = []
         # Sorteia o tamanho dos espinhos que serão sorteados no jogo
     for tamanho in range(50, 131, 10):
         img = pygame.image.load(os.path.join(IMG_DIR, 'espinho2.png')).convert_alpha()
+        # Adiciona os espinhos que foram sorteados
         assets[ESPINHO_IMG].append(pygame.transform.scale(img, (tamanho, tamanho)))
 
 # Carrega as animações do jogo

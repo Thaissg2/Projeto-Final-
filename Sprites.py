@@ -22,8 +22,11 @@ class Blocos(pygame.sprite.Sprite):
         # Posiciona o bloco
         self.rect.x = BLOCO_TAMANHO * coluna
         self.rect.y = BLOCO_TAMANHO * linha
+        # Guarda os grupos
         self.grupos = grupos
+        # Guarda os assets
         self.assets = assets
+        # Define a velocidade dos blocos
         self.velocidadey = 0
 
 # Classe do jogador
@@ -39,15 +42,17 @@ class Peach(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         # Detalhe sobre o posicionamento
         self.rect = self.image.get_rect()
-        # Guarda o grupo de blocos
+        # Guarda os grupos
         self.grupos = grupos
         self.blocos = grupos['blocos']
-        # Posiciona o personagem
+        # Posiciona o jogador
         self.rect.x = coluna * BLOCO_TAMANHO
         self.rect.centerx = LARGURA/2
         self.rect.bottom = linha * BLOCO_TAMANHO
+        # Define as velocidades iniciais do jogador
         self.velocidadex = 0
         self.velocidadey = 0
+        # Guarda os assets
         self.assets = assets
 
     def update(self):
@@ -112,11 +117,15 @@ class Espinho(pygame.sprite.Sprite):
         # Posiciona espinho
         self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
         self.rect.y = random.randint(-100, -ESPINHO_ALTURA)
+        # Define a velocidade do espinho
         self.velocidadex = random.choice([-5,-4,-3,3,4,5])
         self.velocidadey = 6
+        # Guarda os assets
         self.assets = assets
+        # Guarda os grupos
         self.grupos = grupos
         self.blocos = self.grupos['blocos']
+        # Define a velocidade de rotação do espinho
         if self.velocidadex > 0:
             self.rot_velocidade = -10
         else:
@@ -131,6 +140,7 @@ class Espinho(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.orig_image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = center
+        # Atualiza a velocidade do espinho
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se o espinho passar do final da tela, volta para cima e sorteia novas posições e velocidades
@@ -148,10 +158,12 @@ class Espinho(pygame.sprite.Sprite):
             # Sorteia novamente as posições dos espinhos novos
             self.rect.x = random.randint(0, LARGURA-ESPINHO_LARGURA)
             self.rect.y = random.randint(-200, -ESPINHO_ALTURA)
+            # Atualiza a velocidade do espinho
             self.velocidadex = random.choice([-5,-4,-3,3,4,5])
             self.velocidadey = 8
+            # Atualiza a velocidade de rotação do espinho
             if self.velocidadex > 0:
-                self.rot_velocidade = -10  #-int(10 / self.rect.width)
+                self.rot_velocidade = -10
             else:
                 self.rot_velocidade = 10
         # Corrige a posição do espinho antes da colisão
@@ -161,7 +173,9 @@ class Espinho(pygame.sprite.Sprite):
         # Se colidiu com algum bloco, volta para o ponto anterior
         for colisão in colisões:
             self.velocidadey = colisão.velocidadey
+        # Verifica se existe colisão
         if len(colisões) == 0:
+            # Se não houver, o espinho continua caindo
             self.velocidadey = 8
 
 
@@ -180,12 +194,15 @@ class EspinhoGigante(pygame.sprite.Sprite):
         # Posiciona o espinho gigante
         self.rect.x = 0
         self.rect.bottom = 0
+        # Define a velocidade do espinho gigante
         self.velocidadex = 0
         self.velocidadey = 5
-        # Guarda o grupos de blocos
+        # Guarda os grupos
         self.blocos = grupos['blocos']
         self.grupos = grupos
+        # Guarda os assets
         self.assets = assets
+        # Define a velocidade de rotação do espinho gigante
         self.rot_velocidade = -5
         self.rot = 0
         
@@ -197,6 +214,7 @@ class EspinhoGigante(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.orig_image, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = center
+        # Atualiza as velocidades
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior
@@ -205,7 +223,9 @@ class EspinhoGigante(pygame.sprite.Sprite):
         for colisão in colisões:
             self.velocidadey = colisão.velocidadey
             self.velocidadex = 5
+        # Verifica se existe colisão
         if len(colisões) == 0:
+            # Se não houver, o espinho continua caindo
             self.velocidadey = 5
 
 
@@ -223,16 +243,18 @@ class PlataformaMóvel(pygame.sprite.Sprite):
         # Posiciona a plataforma
         self.rect.centerx = LARGURA/2
         self.rect.bottom = 0
+        # Define a velocidade da plataforma móvel
         self.velocidadex = 0
         self.velocidadey = 2
-        # Guarda o grupo de blocos
+        # Guarda os grupos
         self.grupos = grupos
         self.blocos = grupos['blocos']
+        # Guarda os assets
         self.assets = assets
     
     def update(self):
         """ Função que atualiza a posição da plataforma a cada frame """
-        # Atualizando a posição da plataforma móvel
+        # Atualiza a posição da plataforma móvel
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
 
@@ -244,7 +266,7 @@ class Contato(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação de explosão
         self.piscando_anim = assets[PISCANDO_ANIM]
-        # Inicia o processo de animação colocando a primeira imagem na tela.
+        # Inicia o processo de animação colocando a primeira imagem na tela
         # Armazena o índice atual na animação
         self.frame = 0
         # Pega a primeira imagem
@@ -259,17 +281,17 @@ class Contato(pygame.sprite.Sprite):
     
     def update(self):
         """ Função que atualiza o estado da animação do dano a cada frame """
-        # Verifica o tick atual.
+        # Verifica o tick atual
         atual = pygame.time.get_ticks()
         # Verifica quantos ticks se passaram desde a ultima mudança de frame
         elapsed_ticks = atual - self.last_update
-        # Se já está na hora de mudar de imagem...
+        # Se já está na hora de mudar de imagem
         if elapsed_ticks > self.frame_ticks:
             # Marca o tick da nova imagem
             self.last_update = atual
             # Avança um quadro
             self.frame += 1
-            # Verifica se já chegou no final da animação
+        # Verifica se já chegou no final da animação
         if self.frame == len(self.piscando_anim):
             # Se sim, finaliza a animação
             self.kill()
@@ -285,7 +307,6 @@ class GameOver(pygame.sprite.Sprite):
     """ Classe que determina a animação de morte da Peach """
     def __init__(self, center, assets):
         """ Função que define a animação da morte """
-        # Construtor da classe mãe (Sprite).
         pygame.sprite.Sprite.__init__(self)
         # Armazena a animação da morte
         self.diminuindo_anim = assets[DIMINUINDO_ANIM]
@@ -342,11 +363,13 @@ class Cogumelo(pygame.sprite.Sprite):
         # Posiciona o cogumelo
         self.rect.x = random.randint(0, LARGURA-COGUMELO_LARGURA)
         self.rect.y = random.randint(-100, -COGUMELO_ALTURA)
+        # Define a velocidade inicial do cogumelo
         self.velocidadex = 0
         self.velocidadey = 6
-        # Guarda o grupo de blocos
+        # Guarda os grupos
         self.grupos = grupos
         self.blocos = grupos['blocos']
+        # Guarda os assets
         self.assets = assets
         
     def update(self):
@@ -358,10 +381,13 @@ class Cogumelo(pygame.sprite.Sprite):
         colisões = pygame.sprite.spritecollide(self, self.blocos, False)
         # Corrige a posição do espinho antes da colisão
         for colisão in colisões:
+            # Atualiza a velocidade do cogumelo
             self.velocidadey = colisão.velocidadey 
             if self.velocidadex == 0:
-                self.velocidadex = random.choice([-5,-4, 4, 5]) 
+                self.velocidadex = random.choice([-5,-4, 4, 5])
+        # Verifica se existe colisão
         if len(colisões) == 0:
+            # Se não houver, o espinho continua caindo
             self.velocidadey = 6          
 
 # Classe da plataforma fixa
@@ -373,7 +399,9 @@ class Plataforma(pygame.sprite.Sprite):
         self.image = assets[PLATAFORMA_IMG]
         self.rect = self.image.get_rect()
         self.rect.bottom = ALTURA
+        # Guarda os assets
         self.assets = assets
+        # Define a velocidade da plataforma
         self.velocidadey = 0
 
 # Classe da chave de vitória
@@ -384,30 +412,25 @@ class Chave(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # Armazena a imagem do cogumelo
         self.image = assets[CHAVE_IMG]
-        self.orig_image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         # Define a posição do cogumelo
         self.rect = self.image.get_rect()
         # Posiciona o cogumelo
-        self.rect.x = LARGURA/2
-        self.rect.y = -CHAVE_ALTURA 
+        self.rect.x = (LARGURA - CHAVE_LARGURA)/2
+        self.rect.y = -CHAVE_ALTURA
+        # Define velocidade inicial da chave
         self.velocidadex = 0
         self.velocidadey = 4
-        # Guarda o grupo de blocos
+        # Guarda os grupos
         self.grupos = grupos
         self.blocos = grupos['blocos']
+        # Guarda os assets
         self.assets = assets
-        self.rot_velocidade = -10
-        self.rot = 0
+        
 
     def update(self):
         """ Função que atualiza a posição do a chave a cada frame """
         # Atualizando a posição da chave
-        center = self.rect.center
-        self.rot = (self.rot + self.rot_velocidade) % 360
-        self.image = pygame.transform.rotate(self.orig_image, self.rot)
-        self.rect = self.image.get_rect()
-        self.rect.center = center
         self.rect.x += self.velocidadex
         self.rect.y += self.velocidadey
         # Se colidiu com algum bloco, volta para o ponto anterior

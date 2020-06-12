@@ -38,7 +38,7 @@ def game_screen(window, assets):
     for linha in range(len(MAPA)):
         for coluna in range(len(MAPA[linha])):
             tipo_bloco = MAPA[linha][coluna]
-            # Verifica se deve ser inserido o bloco no jogo
+            # Verifica se o bloco deve ser inserido no jogo
             if tipo_bloco == BLOCO:
                 tile = Blocos(grupos, assets, linha, coluna)
                 todos_sprites.add(tile)
@@ -133,33 +133,37 @@ def game_screen(window, assets):
             # Define o momento atual do jogo
             atual = pygame.time.get_ticks()
             
-            # Recria o cogumelo após 45 segundos que o último apareceu
-            if atual - ultimo_cogumelo > 15000:
+            # Recria o cogumelo após 30 segundos que o último apareceu
+            if atual - ultimo_cogumelo > 30000:
                 ultimo_cogumelo = atual
                 c = Cogumelo(assets, grupos)
+                # Adiciona o cogumelo criado no grupo dos sprites e dos cogumelos
                 todos_sprites.add(c)
                 todos_cogumelos.add(c)      
 
-            # Recria o espinho gigante após 60 segundos que o último apareceu
-            if atual - ultimo_espinho_gigante > 10000:
+            # Recria o espinho gigante após 50 segundos que o último apareceu
+            if atual - ultimo_espinho_gigante > 50000:
                 assets[TRILHA_SONORA].stop()
                 assets[SOM_ESPINHO_GIGANTE].play()
                 ultimo_espinho_gigante = atual
                 g = EspinhoGigante(assets, grupos)
+                # Adiciona o espinho gigante criado no grupo dos sprites e dos espinhos gigantes
                 todos_sprites.add(g)
                 todos_espinhos_gigantes.add(g)
 
-            # Recria a plataforma após 60 segundos que a última apareceu
-            if atual - ultima_plataforma > 10000:
+            # Recria a plataforma após 50 segundos que a última apareceu
+            if atual - ultima_plataforma > 50000:
                 ultima_plataforma = atual
                 p = PlataformaMóvel(assets, grupos)
+                # Adiciona a plataforma móvel criada no grupo dos sprites e dos blocos
                 todos_sprites.add(p)
                 blocos.add(p)
 
-            # Determina um tempo máximo de jogo e, se sobreviver o jogador ganha
-            if atual - ultima_chave > 10000:
+            # Cria a chave de vitória após 2 minutos de jogo
+            if atual - ultima_chave > 120000:
                 ultima_chave = atual
                 ch = Chave(assets, grupos)
+                # Adiciona a chave criada no grupo dos sprites e da chave
                 todos_sprites.add(ch)
                 todas_chaves.add(ch)
 
@@ -176,6 +180,7 @@ def game_screen(window, assets):
             # Para cada espinho destruído, outro é criado
             for esp in dano:
                 e = Espinho(assets, grupos)
+                # Adiciona o espinho novo no grupo dos sprites e dos espinhos
                 todos_sprites.add(e)
                 todos_espinhos.add(e)  
     
@@ -193,12 +198,14 @@ def game_screen(window, assets):
                     estado = MORRENDO
                     # Interrompe o som da trilha sonora
                     assets[TRILHA_SONORA].stop()
+                    # Interrompe o som do espinho gigante
                     assets[SOM_ESPINHO_GIGANTE].stop()
                     # Inicia o som de morte
                     assets[SOM_MORTE].play()
                     # Carrega a animação de game over (DIMINUINDO_ANIM)
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
+                # Caso o jogador ainda tenha vidas
                 else:
                     # Carrega a animação do contato (PISCANDO_ANIM)
                     contato = Contato(jogador.rect.center, assets)
@@ -214,30 +221,31 @@ def game_screen(window, assets):
             if len(ganhando_vida) > 0:
                 # Inicia o som de ganho da vida
                 assets[SOM_COGUMELO].play()
-                # Jogador ganha um vida
+                # O jogador ganha um vida
                 vidas += 1
 
             # Se a Peach encostar na chave:    
             if len(salvando_mario) > 0:
-                # Interrompe as músicas
+                # Interrompe o som da trilha sonora
                 assets[TRILHA_SONORA].stop()
+                # Interrompe o som do espinho gigante
                 assets[SOM_ESPINHO_GIGANTE].stop()
                 # Muda o estado do jogador
                 estado = GANHANDO
-                # Carrega a tela de vencedor
+                # Carrega a tela de vitória
                 return WIN
 
-            # Se o jogador encosta no espinho gigante:
+            # Se o jogador encostar no espinho gigante:
             if len(dano_gigante) > 0:
                 # Faz a imagem do jogador desaparecer
                 jogador.kill()
                 # Verifica se o esinho gigante ainda está na tela
                 if len(todos_espinhos_gigantes) == 0:
-                    # Inicia o som do espinho gigante
+                    # Interrompe o som do espinho gigante
                     assets[SOM_ESPINHO_GIGANTE].stop()
                     # Reinicia a trilha sonora
                     assets[TRILHA_SONORA].play()
-                # Jogador perde uma vida
+                # O jogador perde uma vida
                 vidas -= 1
                 # Muda o estado do jogador
                 estado = PERDENDO_VIDAS
@@ -254,6 +262,7 @@ def game_screen(window, assets):
                     # Carrega a animação de game over (DIMINUINDO_ANIM)
                     game_over = GameOver(jogador.rect.center, assets)
                     todos_sprites.add(game_over)
+                # Caso o jogador ainda tenha vidas
                 else:
                     # Inicia o som do dano
                     assets[SOM_DANO].play()
@@ -284,6 +293,8 @@ def game_screen(window, assets):
             if not game_over.alive():
                 # Interrompe a trilha sonora
                 assets[TRILHA_SONORA].stop()
+                # Interrompe o som do espinho gigante
+                assets[SOM_ESPINHO_GIGANTE].stop
                 # Carrega a tela de game over
                 return LOSE
         
