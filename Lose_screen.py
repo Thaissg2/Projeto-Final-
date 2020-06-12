@@ -19,6 +19,9 @@ def end_screen(screen, assets):
     fundo = pygame.transform.scale(fundo, (LARGURA, ALTURA))
     fundo_rect = fundo.get_rect()
 
+    # Inicia o som
+    assets[SOM_TELA_GAMEOVER].play()
+
     # Define uma condição para a tela de game over aparecer
     running = True
     
@@ -27,9 +30,6 @@ def end_screen(screen, assets):
 
         # Ajusta a velocidade do jogo.
         clock.tick(FPS)
-
-        # Inicia o som
-        assets[SOM_TELA_GAMEOVER].play()
 
         # Processa os eventos (mouse, teclado, botão, etc).
         for event in pygame.event.get():
