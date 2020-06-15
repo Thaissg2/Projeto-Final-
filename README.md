@@ -15,6 +15,7 @@ Peach, deve sobreviver a espinhos lançados pelo Bowser para conquistar a chave 
 
 # Funcionamento do jogo
 Para entender como o jogo funciona, acesse o link:
+https://youtu.be/fn00rGR2bnU
 
 # Pré-requisitos do jogo
 Para jogar, é necessário baixar o módulo Pygame. Para isso:
